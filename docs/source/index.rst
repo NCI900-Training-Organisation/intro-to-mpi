@@ -46,7 +46,7 @@ Core hands-on route
 
 .. toctree::
    :maxdepth: 2
-   :caption: Workshop
+   :caption: Core workshop
    :numbered:
 
    01-setup
@@ -55,6 +55,12 @@ Core hands-on route
    04-jacobi
    05-overlap
    06-performance
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Extended topics and reference
+   :numbered:
+
    07-reference
    08-mpi-fundamentals
    09-cuda-memory
