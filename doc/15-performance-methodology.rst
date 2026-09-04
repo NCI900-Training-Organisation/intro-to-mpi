@@ -17,8 +17,9 @@ Separate warm-up iterations from measured iterations.
 warm-ups and repeated measurements. Its pinned-host column times MPI only;
 explicit device-to-host and host-to-device copies must be included when
 comparing complete staged application paths. ``jobs-scripts/06-bandwidth.pbs``
-runs two GPUs within a node; ``jobs-scripts/06-bandwidth-scaleout.pbs``
-requests two full Volta nodes to exercise the scale-out path.
+runs two GPUs within a node. To exercise scale-out, copy the script for a local
+experiment, request two complete GPU nodes, and change the MPI placement to
+one rank per node; verify current Gadi resource policy before submission.
 
 A useful application metric for the Jacobi example is:
 

@@ -25,10 +25,10 @@ around MPI calls.
 The standard job uses two ranks and two GPUs on one node. Arguments are
 ``nx ny iterations`` and ``ny`` must divide by the rank count. Timing uses the
 maximum rank duration because the slowest rank determines application time.
-Use the full-node allocation pattern in
-``jobs-scripts/06-bandwidth-scaleout.pbs`` when an
-inter-node experiment is required; Gadi's scheduler allocates GPUs as node
-resources, so a guaranteed two-host run requires two GPU nodes.
+For an inter-node experiment, adapt the flat resource requests to reserve two
+complete GPU nodes and change placement to ``--map-by ppr:1:node``. Gadi's
+scheduler allocates GPUs as node resources, so a guaranteed two-host run
+requires two GPU nodes. Confirm the current node size and queue policy first.
 
 Correctness checklist
 ---------------------
