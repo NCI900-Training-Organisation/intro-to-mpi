@@ -3,7 +3,8 @@ Direct device-buffer MPI
 
 A CUDA-aware MPI library recognises the address returned by ``cudaMalloc`` and
 selects a device-capable transport or performs internal staging. Application
-code passes that pointer directly:
+code passes that pointer directly, without changing the MPI API, as introduced
+in :ref:`NVIDIA's CUDA-aware MPI article <ref-nvidia-cuda-aware>`:
 
 .. code-block:: c++
 
@@ -24,7 +25,9 @@ GPUs on a node in one virtual address space. CUDA-aware MPI can inspect the
 pointer address and determine whether a buffer is on the host or on a device,
 without changing the MPI API or adding a separate device-buffer argument. UVA
 is an address-identification mechanism; it does not guarantee a particular
-transport or that a transfer will avoid host memory.
+transport or that a transfer will avoid host memory. The UVA-based pointer
+classification model is described in the :ref:`NVIDIA introduction
+<ref-nvidia-cuda-aware>`.
 
 GPUDirect communication paths
 -----------------------------
@@ -42,7 +45,9 @@ When these paths are unavailable, CUDA-aware MPI can still accept the device
 pointer and perform internal staging through pinned host buffers. For larger
 messages, implementations may divide the transfer into chunks and pipeline
 PCIe transfers, host copies, and network operations. Therefore, passing a
-device pointer is not by itself proof that GPUDirect RDMA was used.
+device pointer is not by itself proof that GPUDirect RDMA was used. See the
+:ref:`NVIDIA introduction <ref-nvidia-cuda-aware>` for diagrams of direct,
+accelerated, internally staged, and application-staged paths.
 
 Asynchronous fallback staging
 -----------------------------

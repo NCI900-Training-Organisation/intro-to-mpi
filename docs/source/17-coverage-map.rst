@@ -59,5 +59,5 @@ Primary references
 ------------------
 
 * `NVIDIA: An Introduction to CUDA-Aware MPI <https://developer.nvidia.com/blog/introduction-cuda-aware-mpi/>`_
-* `Intel: Running MPI Applications on GPUs <https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-0/running-mpi-applications-on-gpus.html>`_
+* `Intel: Intel MPI for GPU Clusters <https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2023-2/intel-mpi-for-gpu-clusters.html>`_
 * `EPCC: Using MPI with GPUs <https://epcced.github.io/archer-gpu-course/section-5.02/>`_

@@ -41,7 +41,10 @@ Intel GPU clusters pose the same execution-model questions but use different
 APIs: SYCL USM or OpenMP target device pointers, Level Zero topology, Intel MPI
 GPU pinning, and ``I_MPI_OFFLOAD``. Those Intel controls do not belong in
 Gadi's CUDA/Open MPI scripts. On an Intel system, inspect MPI debug output
-because runtime affinity controls can override one another.
+because runtime affinity controls can override one another. The execution
+models, Level Zero topology detection, scale-up/scale-out cases, GPU pinning,
+IMB GPU benchmarks, and relevant environment controls are documented in
+:ref:`Intel MPI for GPU clusters <ref-intel-mpi-gpu>`.
 
 Typical failures
 ----------------
