@@ -1,9 +1,10 @@
 Performance experiment
 ======================
 
-Submit ``jobs-scripts/04-05-jacobi-benchmark.pbs``. It runs both solver versions for
-three square grids on the same two-node allocation, reducing placement noise.
-Copy results into a table:
+Submit ``jobs-scripts/04-jacobi-blocking.pbs`` and
+``jobs-scripts/05-jacobi-overlap.pbs`` to compare the two solver versions.
+For a size sweep, change the ``nx``, ``ny``, and iteration arguments in both
+scripts identically and copy the results into a table:
 
 .. list-table::
    :header-rows: 1

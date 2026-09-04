@@ -23,7 +23,7 @@ on Gadi; Intel concepts are mapped without pretending Gadi has Intel GPUs.
      - ``03``
    * - GPUDirect P2P, RDMA, fallback pipelining, and topology
      - :doc:`11-gpudirect-topology`
-     - ``03``, ``06`` (single-node and scale-out scripts)
+     - ``03``, ``06`` (adapt placement for scale-out)
    * - Blocking and nonblocking point-to-point MPI
      - :doc:`12-communication-patterns`
      - ``03``–``05``
@@ -53,7 +53,7 @@ on Gadi; Intel concepts are mapped without pretending Gadi has Intel GPUs.
      - portability discussion
    * - Profiling, correctness, and reproducibility
      - :doc:`14-debugging-portability`, :doc:`15-performance-methodology`
-     - ``06`` and the ``04-05`` benchmark script
+     - ``06`` and paired ``04``/``05`` runs
 
 Primary references
 ------------------
