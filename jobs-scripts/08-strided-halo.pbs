@@ -10,9 +10,13 @@
 #PBS -l wd
 #PBS -N mpi-strided
 #PBS -j oe
+
+
 set -eu
 module purge
 module load cuda/11.4.1 openmpi/4.1.5
+
+
 mpirun -np 2 --map-by ppr:2:node build/bin/08-strided-halo packed
 # Optional after the packed path passes; support is MPI/transport dependent:
 if ! mpirun -np 2 --map-by ppr:2:node build/bin/08-strided-halo datatype; then
