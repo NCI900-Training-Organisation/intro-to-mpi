@@ -46,7 +46,9 @@ Start in a clone on a filesystem visible to compute nodes, then submit:
 The script requests two GPUs and two MPI ranks. ``01-rank-device.cu`` forms a
 shared-memory communicator with ``MPI_Comm_split_type``. Its node-local rank
 selects a CUDA device. Expected output maps local ranks 0 and 1 to different
-GPUs on the same host.
+GPUs on the same host. This follows the one-MPI-process-per-device pattern in
+the :ref:`EPCC GPU course <ref-epcc-mpi-gpus>`, while using a node-local rank
+rather than world rank so that the mapping remains valid across nodes.
 
 Why local rank matters
 ----------------------

@@ -57,6 +57,35 @@ Troubleshooting
 Further reading
 ---------------
 
+Core course references
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. _ref-nvidia-cuda-aware:
+
+**NVIDIA — An Introduction to CUDA-Aware MPI.**
+Jiri Kraus, NVIDIA Technical Blog. Introduces host staging, direct device
+pointers, Unified Virtual Addressing, transfer pipelining, GPUDirect P2P,
+GPUDirect RDMA, and accelerated communication.
+`Read the NVIDIA article <https://developer.nvidia.com/blog/introduction-cuda-aware-mpi/>`_.
+
+.. _ref-intel-mpi-gpu:
+
+**Intel — Intel MPI for GPU Clusters.**
+Intel oneAPI GPU Optimization Guide, 2023.2. Covers host-managed and GPU-aware
+execution models, GPU topology detection and pinning, scale-up and scale-out,
+GPU-enabled Intel MPI Benchmarks, profiling, and runtime tuning.
+`Read the Intel guide <https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2023-2/intel-mpi-for-gpu-clusters.html>`_.
+
+.. _ref-epcc-mpi-gpus:
+
+**EPCC — Using MPI with GPUs.**
+ARCHER Introduction to GPU Programming course. Demonstrates rank-based device
+selection and compares explicit host staging with direct GPU-aware MPI.
+`Read the EPCC lesson <https://epcced.github.io/archer-gpu-course/section-5.02/>`_.
+
+Additional references
+~~~~~~~~~~~~~~~~~~~~~
+
 * `Hands-On with Gadi: compute job basics <https://handson-with-gadi.readthedocs.io/en/latest/tutorial/jobs.html>`_
 * `NCI Gadi user guide <https://opus.nci.org.au/display/Help/Gadi+User+Guide>`_
 * `MPI Forum standards <https://www.mpi-forum.org/docs/>`_

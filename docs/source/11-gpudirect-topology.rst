@@ -19,6 +19,9 @@ compatible GPU, NIC, driver, CUDA, MPI transport, and system configuration.
 **GPUDirect accelerated communication** removes unnecessary copies between
 intermediate CUDA and network-fabric buffers in supported paths.
 
+These three communication paths and their relationship to CUDA-aware MPI are
+introduced in :ref:`NVIDIA's article <ref-nvidia-cuda-aware>`.
+
 Without these paths, a CUDA-aware MPI implementation may accept a device
 pointer and internally stage through pinned host memory. That is still a valid
 CUDA-aware API behavior, but it has different performance characteristics.
