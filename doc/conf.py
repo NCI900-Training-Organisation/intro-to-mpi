@@ -1,0 +1,12 @@
+project = "CUDA-aware MPI on Gadi"
+copyright = "2026, NCI Training Organisation"
+author = "NCI Training Organisation"
+release = "1.0"
+extensions = ["sphinx.ext.extlinks"]
+templates_path = ["_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+html_theme = "sphinx_rtd_theme"
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
+html_theme_options = {"navigation_depth": 3, "collapse_navigation": False}
+extlinks = {"src": ("https://github.com/ACCESS-NRI/intro-to-mpi/blob/main/%s", "%s")}
