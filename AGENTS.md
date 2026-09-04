@@ -31,7 +31,8 @@ overlapped nonblocking implementation.
 - `CMakeLists.txt` defines the CMake build for all examples.
 - `jobs-scripts/` contains numbered PBS Pro scripts for running prebuilt
 	examples on Gadi.
-- `doc/` contains numbered Sphinx and Read the Docs documentation.
+- `docs/source/` contains numbered Sphinx and Read the Docs documentation,
+	following the NCI `template_repo` `sphinx-book-theme` layout.
 
 Keep source files, job scripts, and documentation numbered in a consistent
 learning order. Update the documentation navigation whenever a numbered

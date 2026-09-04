@@ -35,7 +35,7 @@ $ qsub jobs-scripts/01-rank-device.pbs
 
 The PBS scripts only run executables already built in `build/bin`; they do not
 invoke CMake or compile code. They target project `jxj900` and the `gpuvolta`
-queue. See the [workshop documentation](doc/index.rst)
+queue. See the [workshop documentation](docs/source/index.rst)
 for the core route, extended reference chapters, commands, exercises, expected
 output, and troubleshooting.
 
@@ -67,13 +67,19 @@ default `build/bin` output directory to be visible on the compute nodes.
 - `src/` — numbered CUDA/MPI source files
 - `CMakeLists.txt` — CMake build definition for all examples
 - `jobs-scripts/` — numbered PBS Pro scripts for Gadi
-- `doc/` — Sphinx/Read the Docs workshop
+- `docs/source/` — Sphinx/Read the Docs workshop content
+- `docs/requirements.txt` — pinned documentation dependencies
+
+The documentation layout and visual configuration follow the NCI Training
+Organisation's [`sphinx-book-theme` template](https://github.com/NCI900-Training-Organisation/template_repo/tree/sphinx-book-theme),
+including its NCI logos, navigation controls, extension set, and dependency
+versions.
 
 Build the documentation locally with:
 
 ```console
-$ python -m pip install -r doc/requirements.txt
-$ sphinx-build -b html doc doc/_build/html
+$ python -m pip install -r docs/requirements.txt
+$ sphinx-build -M html docs/source docs/_build
 ```
 
 ## Licence
