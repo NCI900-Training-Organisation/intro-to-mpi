@@ -11,7 +11,11 @@
 #PBS -l wd
 #PBS -N cuda-mpi-rdma
 #PBS -j oe
+
+
 set -eu
 module purge
 module load cuda/11.4.1 openmpi/4.1.5
+
+
 mpirun -np 2 --map-by ppr:1:node build/bin/06-bandwidth
