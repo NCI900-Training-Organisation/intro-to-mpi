@@ -1,8 +1,12 @@
 #include "00-common.h"
 
-__global__ void set_value(int *value, int x) { *value = x; }
+__global__ void set_value(int *value, int x)
+{
+  *value = x;
+}
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   MPI_CHECK(MPI_Init(&argc, &argv));
   int rank, size;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);

@@ -29,7 +29,8 @@
     }                                                                          \
   } while (0)
 
-inline int select_device(MPI_Comm world, int *local_rank_out = nullptr) {
+inline int select_device(MPI_Comm world, int *local_rank_out = nullptr)
+{
   MPI_Comm local;
 
   MPI_CHECK(MPI_Comm_split_type(world, MPI_COMM_TYPE_SHARED, 0, MPI_INFO_NULL,
@@ -55,7 +56,8 @@ inline int select_device(MPI_Comm world, int *local_rank_out = nullptr) {
 }
 
 /* Select before MPI_Init for MPI libraries that initialise GPU state there. */
-inline int preselect_device_from_env() {
+inline int preselect_device_from_env()
+{
   const char *names[] = {"OMPI_COMM_WORLD_LOCAL_RANK", "MPI_LOCALRANKID",
                          "MV2_COMM_WORLD_LOCAL_RANK", "SLURM_LOCALID", nullptr};
   const char *value = nullptr;

@@ -1,6 +1,7 @@
 #include "00-common.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   int early_device = preselect_device_from_env();
   MPI_CHECK(MPI_Init(&argc, &argv));
   int rank, local_rank;

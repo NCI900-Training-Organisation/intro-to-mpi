@@ -1,13 +1,15 @@
 #include "00-common.h"
 
-__global__ void fill(float *a, size_t n, float v) {
+__global__ void fill(float *a, size_t n, float v)
+{
   size_t i = blockIdx.x * blockDim.x + threadIdx.x;
   if (i < n) {
     a[i] = v;
   }
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   MPI_CHECK(MPI_Init(&argc, &argv));
   int rank, size;
 

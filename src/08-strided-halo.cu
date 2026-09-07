@@ -1,25 +1,29 @@
 #include "00-common.h"
 #include <string>
 
-__global__ void initialise(double *a, int rows, int cols, int rank) {
+__global__ void initialise(double *a, int rows, int cols, int rank)
+{
   int i = blockIdx.x * blockDim.x + threadIdx.x;
   if (i < rows * cols)
     a[i] = rank * 1000000.0 + i;
 }
 __global__ void pack_column(const double *a, double *packed, int rows, int cols,
-                            int column) {
+                            int column)
+{
   int row = blockIdx.x * blockDim.x + threadIdx.x;
   if (row < rows)
     packed[row] = a[row * cols + column];
 }
 __global__ void unpack_column(double *a, const double *packed, int rows,
-                              int cols, int column) {
+                              int cols, int column)
+{
   int row = blockIdx.x * blockDim.x + threadIdx.x;
   if (row < rows)
     a[row * cols + column] = packed[row];
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   MPI_CHECK(MPI_Init(&argc, &argv));
   int rank, size;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);

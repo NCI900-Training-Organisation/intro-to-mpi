@@ -1,7 +1,8 @@
 #include "00-common.h"
 #include <algorithm>
 
-__global__ void init(double *u, int rows, int nx, int ny, int first) {
+__global__ void init(double *u, int rows, int nx, int ny, int first)
+{
   int x = blockIdx.x * blockDim.x + threadIdx.x,
       y = blockIdx.y * blockDim.y + threadIdx.y;
   if (x < nx && y < rows + 2) {
@@ -11,7 +12,8 @@ __global__ void init(double *u, int rows, int nx, int ny, int first) {
   }
 }
 
-__global__ void step(const double *u, double *v, int nx, int begin, int end) {
+__global__ void step(const double *u, double *v, int nx, int begin, int end)
+{
   int x = blockIdx.x * blockDim.x + threadIdx.x + 1,
       y = blockIdx.y * blockDim.y + threadIdx.y + begin;
   if (x < nx - 1 && y <= end) {
@@ -20,7 +22,8 @@ __global__ void step(const double *u, double *v, int nx, int begin, int end) {
   }
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   MPI_Init(&argc, &argv);
   int rank, size;
 

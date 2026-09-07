@@ -1,13 +1,15 @@
 #include "00-common.h"
 
-__global__ void fill_bytes(unsigned char *p, size_t n, unsigned char value) {
+__global__ void fill_bytes(unsigned char *p, size_t n, unsigned char value)
+{
   size_t i = blockIdx.x * blockDim.x + threadIdx.x;
   if (i < n)
     p[i] = value;
 }
 
 static double exchange(void *buffer, int bytes, int peer, int warmup,
-                       int iterations) {
+                       int iterations)
+{
   for (int i = 0; i < warmup; ++i)
     MPI_CHECK(MPI_Sendrecv_replace(buffer, bytes, MPI_BYTE, peer, 7, peer, 7,
                                    MPI_COMM_WORLD, MPI_STATUS_IGNORE));
@@ -19,7 +21,8 @@ static double exchange(void *buffer, int bytes, int peer, int warmup,
   return (MPI_Wtime() - start) / iterations;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   MPI_CHECK(MPI_Init(&argc, &argv));
   int rank, size;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
