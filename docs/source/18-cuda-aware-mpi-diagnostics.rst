@@ -1,5 +1,5 @@
-Identifying CUDA-aware MPI communication paths
-===================================================
+CUDA-aware MPI capability and transport diagnostics
+========================================================
 
 This chapter shows how to investigate which communication path carries a
 CUDA device buffer. Start with ``03-device-pingpong`` and then repeat the
@@ -130,6 +130,90 @@ above. Their output depends on the build and selected backend.
 Do the first run without forcing ``--mca pml ucx`` or restricting ``UCX_TLS``.
 Forcing a backend changes the experiment; it does not reveal the original
 selection. If testing a forced configuration later, record that change.
+
+Check the installed Open MPI toolchain
+-------------------------------------------
+
+Before running a GPU test, inspect the MPI wrapper and build configuration.
+These metadata commands can run on the login node; they do not execute a GPU
+application. For the newer candidate toolchain discussed here, use:
+
+.. code-block:: bash
+
+   module purge
+   module load cuda/12.9.0 openmpi/5.0.8
+   module list
+   nvcc --version
+   mpirun --version
+   mpicxx --showme
+   ompi_info --parsable --all | grep mpi_built_with_cuda_support
+   ompi_info --param pml ucx --level 9
+
+The observed Gadi output included:
+
+.. code-block:: text
+
+   g++ -Wl,--push-state -Wl,--as-needed -lmpi -Wl,--pop-state
+   mca:mpi:base:param:mpi_built_with_cuda_support:value:true
+   MCA pml: ucx (MCA v2.1.0, API v2.1.0, Component v5.0.8)
+
+Interpret these results as follows:
+
+* ``g++`` is the host C++ compiler invoked by the MPI wrapper. The project's
+  CUDA source files are compiled with ``nvcc`` and linked to MPI through CMake.
+* ``value:true`` confirms CUDA support was built into Open MPI. The surrounding
+  synonym and enumerator lines describe the parameter, not additional tests.
+* ``Component v5.0.8`` confirms that the UCX PML component is present in this
+  Open MPI installation. It does not establish runtime selection or the UCX
+  library's own version.
+
+The reported ``pml_ucx_tls`` value included
+``rc_verbs,ud_verbs,rc_mlx5,dc_mlx5,ud_mlx5,cuda_ipc,rocm_ipc``.
+This is a list of criteria for selecting the UCX component, not an inventory
+of working transports or a trace of an actual transfer. Similarly,
+``pml_ucx_devices=mlx*`` influences component priority when matching devices
+are available; it does not prove that a GPU payload used a Mellanox adapter.
+
+Validate the newer toolchain in a compute job
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The output above makes Open MPI 5.0.8 a candidate for these examples, but does
+not validate CUDA 12.9 driver compatibility or GPUDirect operation. Rebuild in a
+fresh build directory using the chosen toolchain and the repository's CMake
+instructions, in an authorised build environment. Keep the Volta architecture
+setting ``CMAKE_CUDA_ARCHITECTURES=70``. Do not compile GPU programs on the login
+node or add compilation commands to the runtime PBS script.
+
+For an Open MPI 5.0.8 diagnostic run, retain the PBS resource directives from
+the script above. Replace its module loading with
+``module load cuda/12.9.0 openmpi/5.0.8`` and use the following execution block.
+This example assumes the fresh build directory is ``build-ompi5``:
+
+.. code-block:: bash
+
+   nvcc --version
+   nvidia-smi
+
+   mpirun -np 2 --map-by ppr:2:node \
+     build-ompi5/bin/01-rank-device
+
+   mpirun -np 2 --map-by ppr:2:node --tag-output \
+     --mca pml_base_verbose 100 \
+     --mca pml_ucx_verbose 10 \
+     -x UCX_LOG_LEVEL=info \
+     build-ompi5/bin/03-device-pingpong 4194304
+
+Submit the script with ``qsub``. Confirm two different GPU assignments,
+``received 1`` from rank 0, and the backend selected in the runtime log.
+``nvidia-smi`` records the compute-node driver; its displayed CUDA version is
+not the version of the toolkit selected by the module. Record ``nvcc --version``
+as well. Successful execution still does not prove GPUDirect use: continue
+with the transport evidence checks below.
+
+Use identical toolchain modules when building and running. The repository's
+existing PBS scripts still load CUDA 11.4.1 and Open MPI 4.1.5; they must not be
+used unchanged to validate the new build. This diagnostic variant does not
+change the repository's default toolchain.
 
 Interpret UCX evidence carefully
 -------------------------------------
