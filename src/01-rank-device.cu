@@ -1,6 +1,7 @@
 #include "00-common.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   MPI_CHECK(MPI_Init(&argc, &argv));
   int rank, size, local_rank;
 
