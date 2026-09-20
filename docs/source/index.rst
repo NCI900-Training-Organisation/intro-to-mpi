@@ -15,13 +15,19 @@ topology, debugging, portability, and performance methodology.
 Learning outcomes
 -----------------
 
-By the end you can explain MPI ranks and communicators, map one MPI rank to
-each GPU, pass device pointers to MPI, describe UVA and GPUDirect paths,
-manage CUDA/MPI synchronisation, implement direct halo exchanges, overlap
-interior computation with communication, validate results, and reason about
-topology, collectives, derived datatypes, managed memory, portability, and
-performance. The first six chapters form the core route; the remaining
-chapters and examples are an extended course rather than a four-hour limit.
+By the end you can 
+
+ #. Map one MPI rank to each GPU
+
+ #. Pass device pointers to MPI
+
+ #. Describe UVA and GPUDirect paths
+
+ #. Manage CUDA/MPI synchronisation
+
+ #. Implement direct halo exchanges
+
+ #. Overlap interior computation with communication
 
 Core hands-on route
 -------------------
