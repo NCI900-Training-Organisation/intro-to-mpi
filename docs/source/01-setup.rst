@@ -5,9 +5,7 @@ Prerequisites
 -------------
 
 Participants should know basic C/C++, CUDA kernels, and MPI point-to-point
-calls. They need Gadi access, membership of ``jxj900``, and access to the
-``gpuvolta`` queue. Do not compile or execute GPU work on a login node; submit
-the supplied PBS scripts.
+calls. They need Gadi access, membership of the project ``vp91``.
 
 Why combine MPI and CUDA?
 -------------------------
