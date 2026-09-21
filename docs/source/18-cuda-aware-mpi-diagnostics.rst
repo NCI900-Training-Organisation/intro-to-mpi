@@ -53,14 +53,14 @@ and keeps the repository's current Gadi module settings in one place.
 .. code-block:: bash
 
    #!/bin/bash
-   #PBS -P jxj900
+   #PBS -P vp91
    #PBS -q gpuvolta
    #PBS -l ncpus=24
    #PBS -l ngpus=2
    #PBS -l mem=8gb
    #PBS -l jobfs=1GB
    #PBS -l walltime=00:10:00
-   #PBS -l storage=scratch/jxj900
+   #PBS -l storage=scratch/vp91
    #PBS -l wd
    #PBS -N mpi-transport
    #PBS -j oe
