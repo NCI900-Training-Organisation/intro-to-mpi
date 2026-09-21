@@ -3,9 +3,7 @@ The host-staged baseline
 
 Ordinary MPI historically accepted host pointers only. A GPU application then
 had to copy each outgoing buffer device→host, call MPI, and copy the received
-buffer host→device. This is the explicit staging sequence contrasted with
-device-buffer MPI in the :ref:`NVIDIA introduction <ref-nvidia-cuda-aware>`
-and the :ref:`EPCC course <ref-epcc-mpi-gpus>`:
+buffer host→device. 
 
 .. code-block:: text
 
@@ -40,5 +38,4 @@ It is portable to non-CUDA-aware MPI builds, can be easier to debug, and may
 beat direct paths for some small messages or poorly configured networks. Treat
 CUDA awareness as a capability to verify, not a universal speed guarantee.
 Intel likewise describes a host-managed or "naïve" execution model as useful
-for some small messages; see :ref:`Intel MPI for GPU clusters
-<ref-intel-mpi-gpu>`.
+for some small messages.
