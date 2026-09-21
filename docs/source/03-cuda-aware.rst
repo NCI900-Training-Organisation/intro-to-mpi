@@ -3,8 +3,7 @@ Direct device-buffer MPI
 
 A CUDA-aware MPI library recognises the address returned by ``cudaMalloc`` and
 selects a device-capable transport or performs internal staging. Application
-code passes that pointer directly, without changing the MPI API, as introduced
-in :ref:`NVIDIA's CUDA-aware MPI article <ref-nvidia-cuda-aware>`:
+code passes that pointer directly, without changing the MPI API:
 
 .. code-block:: c++
 
@@ -82,6 +81,33 @@ The exact output is version-dependent. A crash such as ``invalid buffer
 pointer`` when the staged example works strongly suggests that the loaded MPI
 or selected transport cannot handle device memory. Confirm against the current
 NCI software page rather than forcing undocumented MCA parameters.
+
+A CUDA-aware MPI build is necessary but not sufficient: the hardware, PCIe or
+NVLink topology, network fabric, and runtime transport selection must also
+support the direct path. Check each layer separately:
+
+* ``nvidia-smi topo -m`` shows whether GPU pairs are connected by PCIe or NVLink
+  and is the first check for **GPUDirect P2P**.
+* ``cudaDeviceCanAccessPeer`` can confirm at runtime that two GPUs can exchange
+  data directly.
+* ``ibstat`` or ``ibv_devinfo`` confirms whether the node has an RDMA-capable
+  network interface, which is required for **GPUDirect RDMA**.
+* ``ucx_info -d`` or the Open MPI transport configuration shows whether the
+  active transport supports GPU buffers, such as ``cuda_copy`` or CUDA-aware
+  RDMA paths.
+
+These checks help distinguish the three common cases:
+
+* **GPUDirect P2P**: direct movement between GPUs on the same node.
+* **GPUDirect RDMA**: NIC reads or writes GPU memory for inter-node transfers
+  without a host staging copy.
+* **GPUDirect accelerated communication**: a CUDA-aware path removes an extra
+  buffer copy between a CUDA driver buffer and a network-fabric buffer.
+
+The MPI library may still choose an internal staging path if the direct path is
+not available, so capability checks should be treated as a reliability and
+performance check rather than a guarantee that a particular transport will be
+used in every run.
 
 Beyond simple buffers
 ---------------------
