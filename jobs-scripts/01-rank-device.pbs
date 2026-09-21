@@ -16,5 +16,9 @@ set -eu
 module purge
 module load cuda/11.4.1 openmpi/4.1.5
 
-
+# Open MPI rank placement: "ppr:2:node" means "2 processes per resource,
+# where the resource is a node". For this two-rank job, both MPI ranks are
+# placed on the same node, which matches the requested 2-GPU allocation.
+# This keeps each rank close to a local GPU and makes the node-local device
+# selection in the example deterministic.
 mpirun -np 2 --map-by ppr:2:node build/bin/01-rank-device
