@@ -9,6 +9,12 @@ int main(int argc, char **argv)
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
 
+  // Each MPI rank must pick a different CUDA device on the same node.
+  // The shared-memory communicator groups ranks that are on the same host,
+  // so their local rank values are 0, 1, 2, ... in order. The mapping is:
+  //   device = local_rank % device_count
+  // With a 2-rank, 2-GPU job, rank 0 gets local rank 0 and rank 1 gets local
+  // rank 1, so the first process uses GPU 0 and the second uses GPU 1.
   int device = select_device(MPI_COMM_WORLD, &local_rank);
   cudaDeviceProp prop;
   CUDA_CHECK(cudaGetDeviceProperties(&prop, device));

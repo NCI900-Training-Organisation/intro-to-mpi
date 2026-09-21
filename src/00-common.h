@@ -35,6 +35,10 @@
 
 inline int select_device(MPI_Comm world, int *local_rank_out = nullptr)
 {
+  // MPI_COMM_TYPE_SHARED creates a communicator containing only the ranks that
+  // share the same host. That gives us a node-local rank index, which is the
+  // correct value to map to a GPU. This avoids using the global MPI rank as the
+  // device number, because global ranks can repeat across different nodes.
   MPI_Comm local;
   MPI_CHECK(MPI_Comm_split_type(world, MPI_COMM_TYPE_SHARED, 0, MPI_INFO_NULL,
                                 &local));
@@ -42,6 +46,10 @@ inline int select_device(MPI_Comm world, int *local_rank_out = nullptr)
   MPI_CHECK(MPI_Comm_rank(local, &local_rank));
   CUDA_CHECK(cudaGetDeviceCount(&devices));
 
+  // This is the actual mapping used for one rank per GPU on a node:
+  //   device = local_rank % device_count
+  // It ensures local ranks 0, 1, 2, ... select different GPUs, wrapping only
+  // when the number of processes exceeds the number of visible devices.
 
   if (!devices) {
     std::fprintf(stderr, "No visible CUDA devices\n");
