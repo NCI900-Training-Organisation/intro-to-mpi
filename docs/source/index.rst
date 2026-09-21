@@ -8,7 +8,7 @@ topology, debugging, portability, and performance methodology.
 
 .. note::
 
-   The examples target NCI Gadi, project ``jxj900``, queue ``gpuvolta``, and
+   The examples target NCI Gadi, project ``vp91``, queue ``gpuvolta``, and
    NVIDIA Volta GPUs. Module versions and queue policy change: run
    ``module avail cuda openmpi`` and check NCI documentation before teaching.
 
