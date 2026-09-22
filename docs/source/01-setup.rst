@@ -57,6 +57,13 @@ The key idea is that a rank should not blindly use its global MPI rank as a
 GPU number. Global rank 2 on a second node is not the same as GPU 2 on the
 first node.
 
+The following diagram shows how ``select_device`` creates a communicator for
+each node and uses the resulting local rank to choose a GPU:
+
+.. image:: images/01-select-device-local-communicator.png
+   :alt: MPI world ranks are split into node-local communicators, then each local rank selects a GPU
+   :width: 100%
+
 .. code-block:: c++
 
    // Each MPI rank must pick a different CUDA device on the same node.
@@ -102,6 +109,14 @@ node, or it may be placed with other ranks on the same host depending on the
 launch layout. Because of that, the code must be robust to different MPI launch
 configurations rather than assuming that rank number and device number are the
 same thing.
+
+The two layouts below show why the node-local rank is needed. The scheduler and
+``mpirun`` may distribute global ranks differently across hosts, but each host
+still numbers the ranks in its shared-memory communicator from zero:
+
+.. image:: images/02-why-local-rank-required.png
+   :alt: Two valid MPI host mappings show that global ranks can be distributed differently while local ranks restart at zero on each host
+   :width: 100%
 
 The helper in [src/00-common.h](src/00-common.h) therefore uses a node-local
 rank obtained from ``MPI_COMM_TYPE_SHARED``. This makes the device selection

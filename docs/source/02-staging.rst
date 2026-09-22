@@ -9,6 +9,14 @@ buffer host→device.
 
    GPU send buffer -> pinned host buffer -> MPI -> pinned host buffer -> GPU
 
+The full send and receive paths are shown below. The pinned buffers are ordinary
+host memory from MPI's point of view; the application performs both CUDA copies
+explicitly around the MPI operation.
+
+.. image:: images/03-host-staged-pipeline.png
+   :alt: Host-staged MPI pipeline showing device-to-host copy, MPI transfer, and host-to-device copy
+   :width: 100%
+
 Run the baseline:
 
 .. code-block:: console
@@ -18,6 +26,18 @@ Run the baseline:
 ``02-staged-pingpong.cu`` uses ``cudaMallocHost`` because page-locked memory
 supports faster and asynchronous CUDA copies. The blocking ``cudaMemcpy`` also
 establishes the required ordering between the fill kernel and MPI.
+
+.. note::
+
+   ``malloc`` and ``cudaMallocHost`` both return host pointers, but they allocate
+   different kinds of host memory. ``malloc`` returns ordinary pageable memory.
+   CUDA can copy it, but the runtime may need to stage the data through a temporary
+   pinned buffer, and asynchronous copies cannot use it reliably without additional
+   care. ``cudaMallocHost`` returns page-locked (pinned) host memory, which the GPU
+   can access directly for more predictable and asynchronous transfers. Both kinds
+   of pointer are valid host buffers for ordinary MPI. Pinned memory is typically
+   faster for repeated transfers, but it is a limited system resource and should be
+   released with ``cudaFreeHost`` rather than ``free``.
 
 The printed time contains the network transfer *and both CUDA copies*. This is
 a pedagogical comparison, not a rigorous latency benchmark: add warm-ups,

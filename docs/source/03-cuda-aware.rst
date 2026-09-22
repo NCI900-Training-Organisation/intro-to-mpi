@@ -11,6 +11,16 @@ code passes that pointer directly, without changing the MPI API:
    MPI_Sendrecv_replace(device, count, MPI_FLOAT, peer, 0,
                         peer, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
+The data path is summarized below. The application passes the ``cudaMalloc``
+pointer directly to MPI; CUDA-aware MPI classifies the pointer through Unified
+Virtual Addressing and chooses a device-capable path when one is available.
+It may instead manage an internal pinned-host fallback, so the call syntax alone
+does not prove that GPUDirect RDMA was used.
+
+.. image:: images/04-cuda-aware-pipeline.png
+  :alt: CUDA-aware MPI identifies a device pointer and chooses a direct transport or internal host-staging fallback
+  :width: 100%
+
 Run ``qsub jobs-scripts/03-device-pingpong.pbs`` and compare its output with
 the staged run. Direct syntax does not prove GPUDirect RDMA occurred; the MPI
 implementation may choose CUDA IPC, GPUDirect RDMA, or an internal bounce
