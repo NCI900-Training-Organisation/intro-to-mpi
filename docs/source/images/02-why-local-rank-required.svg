@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="980" viewBox="0 0 1200 980" role="img" aria-labelledby="title desc">
+  <title id="title">Why MPI local rank is required</title>
+  <desc id="desc">Two valid MPI process placements distribute global ranks differently across hosts. Each host creates a local communicator and numbers its local processes from zero.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f5ef; }
+      .ink { fill: #1d2935; font-family: sans-serif; }
+      .muted { fill: #52606d; font-family: sans-serif; }
+      .title { font-size: 30px; font-weight: 700; }
+      .heading { font-size: 22px; font-weight: 700; }
+      .label { font-size: 17px; font-weight: 700; }
+      .small { font-size: 16px; }
+      .layout-a { fill: #e4f1ed; stroke: #2b7a68; stroke-width: 3; }
+      .layout-b { fill: #e7edf7; stroke: #3e6195; stroke-width: 3; }
+      .host-a { fill: #ffffff; stroke: #2b7a68; stroke-width: 2; }
+      .host-b { fill: #ffffff; stroke: #3e6195; stroke-width: 2; }
+      .rank-a { fill: #d1ebe4; stroke: #2b7a68; stroke-width: 2; }
+      .rank-b { fill: #d7e2f4; stroke: #3e6195; stroke-width: 2; }
+      .wrong { fill: #f7d7d2; stroke: #b34d3d; stroke-width: 2; }
+      .warning { fill: #fff1ee; stroke: #b34d3d; stroke-width: 3; }
+      .arrow { stroke: #7a4e18; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .divider { stroke: #9aa4ad; stroke-width: 2; stroke-dasharray: 8 7; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7a4e18"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1200" height="980"/>
+  <text class="ink title" x="60" y="58">Why local rank is required</text>
+  <text class="muted small" x="60" y="88">The launcher and scheduler decide where global MPI ranks run.</text>
+  <text class="muted small" x="60" y="112">The same global rank can be local to different hosts in different launch layouts.</text>
+
+  <rect class="layout-a" x="60" y="145" width="520" height="250" rx="16"/>
+  <text class="ink heading" x="320" y="180" text-anchor="middle">Layout A</text>
+  <text class="muted small" x="320" y="207" text-anchor="middle">Ranks are placed consecutively by host</text>
+
+  <rect class="host-a" x="90" y="230" width="220" height="130" rx="12"/>
+  <rect class="host-a" x="330" y="230" width="220" height="130" rx="12"/>
+  <text class="ink label" x="200" y="258" text-anchor="middle">Host A</text>
+  <text class="ink label" x="440" y="258" text-anchor="middle">Host B</text>
+  <rect class="rank-a" x="110" y="278" width="180" height="34" rx="8"/>
+  <rect class="rank-a" x="350" y="278" width="180" height="34" rx="8"/>
+  <text class="ink small" x="200" y="301" text-anchor="middle">world 0 -&gt; local 0</text>
+  <text class="ink small" x="440" y="301" text-anchor="middle">world 2 -&gt; local 0</text>
+  <rect class="rank-a" x="110" y="318" width="180" height="34" rx="8"/>
+  <rect class="rank-a" x="350" y="318" width="180" height="34" rx="8"/>
+  <text class="ink small" x="200" y="341" text-anchor="middle">world 1 -&gt; local 1</text>
+  <text class="ink small" x="440" y="341" text-anchor="middle">world 3 -&gt; local 1</text>
+
+  <rect class="layout-b" x="620" y="145" width="520" height="250" rx="16"/>
+  <text class="ink heading" x="880" y="180" text-anchor="middle">Layout B</text>
+  <text class="muted small" x="880" y="207" text-anchor="middle">A different mapping is also valid</text>
+
+  <rect class="host-b" x="650" y="230" width="220" height="130" rx="12"/>
+  <rect class="host-b" x="890" y="230" width="220" height="130" rx="12"/>
+  <text class="ink label" x="760" y="258" text-anchor="middle">Host A</text>
+  <text class="ink label" x="1000" y="258" text-anchor="middle">Host B</text>
+  <rect class="rank-b" x="670" y="278" width="180" height="34" rx="8"/>
+  <rect class="rank-b" x="910" y="278" width="180" height="34" rx="8"/>
+  <text class="ink small" x="760" y="301" text-anchor="middle">world 0 -&gt; local 0</text>
+  <text class="ink small" x="1000" y="301" text-anchor="middle">world 1 -&gt; local 0</text>
+  <rect class="rank-b" x="670" y="318" width="180" height="34" rx="8"/>
+  <rect class="rank-b" x="910" y="318" width="180" height="34" rx="8"/>
+  <text class="ink small" x="760" y="341" text-anchor="middle">world 2 -&gt; local 1</text>
+  <text class="ink small" x="1000" y="341" text-anchor="middle">world 3 -&gt; local 1</text>
+
+  <line class="divider" x1="60" y1="430" x2="1140" y2="430"/>
+  <text class="ink heading" x="600" y="475" text-anchor="middle">Pairings from world rank % 2</text>
+
+  <rect class="host-a" x="150" y="515" width="430" height="150" rx="16"/>
+  <rect class="host-b" x="620" y="515" width="430" height="150" rx="16"/>
+  <text class="ink label" x="365" y="550" text-anchor="middle">Layout A</text>
+  <text class="ink label" x="835" y="550" text-anchor="middle">Layout B</text>
+  <text class="muted small" x="365" y="580" text-anchor="middle">Host A: 0 -&gt; 0, 1 -&gt; 1</text>
+  <text class="muted small" x="365" y="607" text-anchor="middle">Host B: 2 -&gt; 0, 3 -&gt; 1</text>
+  <text class="muted small" x="835" y="580" text-anchor="middle">Host A: 0 -&gt; 0, 2 -&gt; 0</text>
+  <text class="muted small" x="835" y="607" text-anchor="middle">Host B: 1 -&gt; 1, 3 -&gt; 1</text>
+  <text class="ink label" x="835" y="640" text-anchor="middle">Both hosts have a pairing conflict.</text>
+
+  <line class="divider" x1="60" y1="710" x2="1140" y2="710"/>
+  <text class="ink heading" x="600" y="755" text-anchor="middle">What goes wrong with world-rank mapping</text>
+  <text class="muted small" x="600" y="782" text-anchor="middle">If there are two devices, using device = world_rank % device_count depends on global placement.</text>
+
+  <rect class="warning" x="150" y="810" width="900" height="120" rx="16"/>
+  <text class="ink label" x="600" y="840" text-anchor="middle">Layout B: world rank % 2</text>
+  <text class="ink small" x="600" y="870" text-anchor="middle">Host A: world 0 -&gt; device 0, world 2 -&gt; device 0  (conflict)</text>
+  <text class="ink small" x="600" y="897" text-anchor="middle">Host B: world 1 -&gt; device 1, world 3 -&gt; device 1  (conflict)</text>
+</svg>

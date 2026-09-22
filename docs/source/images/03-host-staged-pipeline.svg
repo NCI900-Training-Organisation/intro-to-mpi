@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760" role="img" aria-labelledby="title desc">
+  <title id="title">Host-staged MPI communication pipeline</title>
+  <desc id="desc">A GPU sender copies data to pinned host memory, MPI transfers it between hosts, and the receiver copies it back to GPU memory. Synchronization points order each stage.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f5ef; }
+      .ink { fill: #1d2935; font-family: sans-serif; }
+      .muted { fill: #52606d; font-family: sans-serif; }
+      .title { font-size: 30px; font-weight: 700; }
+      .heading { font-size: 22px; font-weight: 700; }
+      .label { font-size: 18px; font-weight: 700; }
+      .small { font-size: 16px; }
+      .gpu { fill: #e7edf7; stroke: #3e6195; stroke-width: 3; }
+      .host { fill: #e4f1ed; stroke: #2b7a68; stroke-width: 3; }
+      .pinned { fill: #fff1d8; stroke: #b77718; stroke-width: 3; }
+      .mpi { fill: #eee6f5; stroke: #76529a; stroke-width: 3; }
+      .sync { fill: #fff1ee; stroke: #b34d3d; stroke-width: 2; }
+      .arrow { stroke: #7a4e18; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .guide { stroke: #9aa4ad; stroke-width: 2; stroke-dasharray: 8 7; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7a4e18"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1400" height="760"/>
+  <text class="ink title" x="60" y="58">Host-staged MPI pipeline</text>
+  <text class="muted small" x="60" y="88">CUDA-aware MPI is not required: the application explicitly moves data through pinned host buffers.</text>
+
+  <rect class="host" x="60" y="130" width="570" height="500" rx="18"/>
+  <rect class="host" x="770" y="130" width="570" height="500" rx="18"/>
+  <text class="ink heading" x="345" y="172" text-anchor="middle">Sender process</text>
+  <text class="ink heading" x="1055" y="172" text-anchor="middle">Receiver process</text>
+  <text class="muted small" x="345" y="198" text-anchor="middle">one MPI rank and one GPU</text>
+  <text class="muted small" x="1055" y="198" text-anchor="middle">one MPI rank and one GPU</text>
+
+  <rect class="gpu" x="105" y="245" width="210" height="105" rx="14"/>
+  <text class="ink label" x="210" y="282" text-anchor="middle">GPU memory</text>
+  <text class="muted small" x="210" y="310" text-anchor="middle">send buffer</text>
+  <text class="muted small" x="210" y="334" text-anchor="middle">filled by CUDA kernel</text>
+
+  <rect class="pinned" x="380" y="245" width="210" height="105" rx="14"/>
+  <text class="ink label" x="485" y="282" text-anchor="middle">Pinned host</text>
+  <text class="muted small" x="485" y="310" text-anchor="middle">send staging buffer</text>
+  <text class="muted small" x="485" y="334" text-anchor="middle">cudaMallocHost</text>
+
+  <rect class="pinned" x="810" y="245" width="210" height="105" rx="14"/>
+  <text class="ink label" x="915" y="282" text-anchor="middle">Pinned host</text>
+  <text class="muted small" x="915" y="310" text-anchor="middle">receive staging buffer</text>
+  <text class="muted small" x="915" y="334" text-anchor="middle">cudaMallocHost</text>
+
+  <rect class="gpu" x="1085" y="245" width="210" height="105" rx="14"/>
+  <text class="ink label" x="1190" y="282" text-anchor="middle">GPU memory</text>
+  <text class="muted small" x="1190" y="310" text-anchor="middle">receive buffer</text>
+  <text class="muted small" x="1190" y="334" text-anchor="middle">used by CUDA kernel</text>
+
+  <line class="arrow" x1="315" y1="297" x2="375" y2="297"/>
+  <text class="muted small" x="345" y="232" text-anchor="middle">1. D2H copy</text>
+  <line class="arrow" x1="1025" y1="297" x2="1080" y2="297"/>
+  <text class="muted small" x="1055" y="232" text-anchor="middle">3. H2D copy</text>
+
+  <rect class="mpi" x="545" y="405" width="310" height="100" rx="16"/>
+  <text class="ink label" x="700" y="442" text-anchor="middle">MPI_Send / MPI_Recv</text>
+  <text class="muted small" x="700" y="470" text-anchor="middle">host pointer over the network</text>
+  <line class="arrow" x1="485" y1="355" x2="610" y2="400"/>
+  <line class="arrow" x1="790" y1="400" x2="915" y2="355"/>
+  <text class="muted small" x="700" y="382" text-anchor="middle">2. network transfer</text>
+
+  <rect class="sync" x="130" y="535" width="430" height="58" rx="12"/>
+  <text class="ink small" x="345" y="570" text-anchor="middle">cudaMemcpy completes before MPI_Send</text>
+  <rect class="sync" x="840" y="535" width="430" height="58" rx="12"/>
+  <text class="ink small" x="1055" y="570" text-anchor="middle">MPI_Recv completes before H2D copy</text>
+
+  <line class="guide" x1="700" y1="130" x2="700" y2="630"/>
+  <text class="muted small" x="700" y="690" text-anchor="middle">Every message pays for two CUDA copies plus the MPI transfer.</text>
+</svg>
