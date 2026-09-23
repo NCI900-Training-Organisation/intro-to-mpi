@@ -74,7 +74,7 @@ each node and uses the resulting local rank to choose a GPU:
    // rank 1, so the first process uses GPU 0 and the second uses GPU 1.
    int device = select_device(MPI_COMM_WORLD, &local_rank);
 
-The helper in [src/00-common.h](src/00-common.h) does the actual mapping:
+The helper in [src/common.h](src/common.h) does the actual mapping:
 
 .. code-block:: c++
 
@@ -118,7 +118,7 @@ still numbers the ranks in its shared-memory communicator from zero:
    :alt: Two valid MPI host mappings show that global ranks can be distributed differently while local ranks restart at zero on each host
    :width: 100%
 
-The helper in [src/00-common.h](src/00-common.h) therefore uses a node-local
+The helper in [src/common.h](src/common.h) therefore uses a node-local
 rank obtained from ``MPI_COMM_TYPE_SHARED``. This makes the device selection
 independent of the global MPI rank ordering and ensures that each process picks a
 GPU consistent with its placement on the current node. The modulo fallback keeps

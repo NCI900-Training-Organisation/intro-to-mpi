@@ -1,4 +1,4 @@
-#include "00-common.h"
+#include "common.h"
 
 
 __global__ void set_value(double *value, double x)

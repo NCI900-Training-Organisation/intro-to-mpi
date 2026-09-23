@@ -1,4 +1,4 @@
-#include "00-common.h"
+#include "common.h"
 
 
 __global__ void fill_bytes(unsigned char *p, size_t n, unsigned char value)
