@@ -1,6 +1,16 @@
 #include "00-common.h"
 #include <algorithm>
 
+/*
+ * Overlapped Jacobi stencil.
+ *
+ * This version is the same as the blocking example in 04-jacobi-blocking.cu in
+ * its domain layout, ghost rows, and stencil update; the main difference is the
+ * communication pattern. Instead of blocking on MPI_Sendrecv(), we post
+ * nonblocking receives and sends for the halo rows, start the interior update
+ * immediately, and then wait for the communication to finish before updating the
+ * first and last local rows. This overlaps communication with computation.
+ */
 
 __global__ void init(double *u, int rows, int nx, int ny, int first)
 {
@@ -50,9 +60,9 @@ int main(int argc, char **argv)
   }
 
 
-  int rows = ny / size, first = rank * rows,
-      up = rank ? rank - 1 : MPI_PROC_NULL,
-      down = rank < size - 1 ? rank + 1 : MPI_PROC_NULL;
+  int rows = ny / size, first = rank * rows;
+  int up = rank ? rank - 1 : MPI_PROC_NULL;
+  int down = rank < size - 1 ? rank + 1 : MPI_PROC_NULL;
 
 
   size_t bytes = (size_t)(rows + 2) * nx * sizeof(double);
@@ -73,22 +83,72 @@ int main(int argc, char **argv)
 
 
   for (int k = 0; k < iters; k++) {
+    /*
+     * Nonblocking halo exchange. Unlike the blocking version, these requests are
+     * posted first and the interior work is launched before the communication has
+     * necessarily completed. This allows overlap between MPI traffic and the GPU
+     * kernel that updates the interior rows.
+     */
     MPI_Request q[4];
-    MPI_CHECK(MPI_Irecv(u, nx, MPI_DOUBLE, up, 11, MPI_COMM_WORLD, &q[0]));
-    MPI_CHECK(MPI_Irecv(u + (rows + 1) * nx, nx, MPI_DOUBLE, down, 10,
-                        MPI_COMM_WORLD, &q[1]));
-    MPI_CHECK(MPI_Isend(u + nx, nx, MPI_DOUBLE, up, 10, MPI_COMM_WORLD, &q[2]));
-    MPI_CHECK(MPI_Isend(u + rows * nx, nx, MPI_DOUBLE, down, 11, MPI_COMM_WORLD,
-                        &q[3]));
+    MPI_CHECK(MPI_Irecv(
+        u,                                    /* top ghost row receive buffer from rank above */
+        nx,                                   /* one row of nx doubles */
+        MPI_DOUBLE,                           /* data type */
+        up,                                   /* source rank above */
+        11,                                   /* tag for top halo receive */
+        MPI_COMM_WORLD,                       /* communicator */
+        &q[0]                                 /* request handle for this receive */
+    ));
+    MPI_CHECK(MPI_Irecv(
+        u + (rows + 1) * nx,                  /* bottom ghost row receive buffer from rank below */
+        nx,                                   /* one row of nx doubles */
+        MPI_DOUBLE,                           /* data type */
+        down,                                 /* source rank below */
+        10,                                   /* tag for bottom halo receive */
+        MPI_COMM_WORLD,                       /* communicator */
+        &q[1]                                 /* request handle for this receive */
+    ));
+    MPI_CHECK(MPI_Isend(
+        u + nx,                               /* first real row to send upward */
+        nx,                                   /* one row of nx doubles */
+        MPI_DOUBLE,                           /* data type */
+        up,                                   /* destination rank above */
+        10,                                   /* tag for upward send */
+        MPI_COMM_WORLD,                       /* communicator */
+        &q[2]                                 /* request handle for this send */
+    ));
+    MPI_CHECK(MPI_Isend(
+        u + rows * nx,                        /* last real row to send downward */
+        nx,                                   /* one row of nx doubles */
+        MPI_DOUBLE,                           /* data type */
+        down,                                 /* destination rank below */
+        11,                                   /* tag for downward send */
+        MPI_COMM_WORLD,                       /* communicator */
+        &q[3]                                 /* request handle for this send */
+    ));
 
 
+    /*
+     * Interior rows can be updated while the halo exchange is still in flight.
+     * The kernel starts from row 2 and ends at row rows - 1, which excludes the
+     * top/bottom ghost rows and the first/last owned boundary rows handled next.
+     */
     dim3 gi((nx + 31) / 32, (rows - 2 + 7) / 8);
     step_rows<<<gi, b>>>(u, v, nx, 2, rows - 1);
 
 
+    /*
+     * Wait for the halo exchange to complete before updating the two rows that
+     * directly touch the ghost data. This keeps the stencil correct while still
+     * overlapping most of the communication with the interior compute.
+     */
     MPI_CHECK(MPI_Waitall(4, q, MPI_STATUSES_IGNORE));
 
 
+    /*
+     * Update the first and last owned row separately once the neighboring halo
+     * data is available. The global-domain edges are skipped with rank checks.
+     */
     dim3 ge((nx + 31) / 32, 1);
     if (rank > 0) {
       step_rows<<<ge, b>>>(u, v, nx, 1, 1);

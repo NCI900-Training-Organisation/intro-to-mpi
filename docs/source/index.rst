@@ -79,3 +79,4 @@ Core hands-on route
    16-alternatives-and-future
    17-coverage-map
    18-cuda-aware-mpi-diagnostics
+   19-mpi-rma-gpu

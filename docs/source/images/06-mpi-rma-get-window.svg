@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="690" viewBox="0 0 1200 690" role="img" aria-labelledby="title desc">
+  <title id="title">MPI RMA MPI Get with GPU buffers</title>
+  <desc id="desc">Rank 0 initiates MPI Get from a row exposed by rank 1's MPI window into rank 0's device ghost row. MPI Win flush all completes the read before the CUDA stencil uses the data.</desc>
+  <defs>
+    <marker id="arrow-blue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#1769aa"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#2b7a4b"/>
+    </marker>
+    <style>
+      .title { font: 700 28px sans-serif; fill: #1e293b; }
+      .heading { font: 700 21px sans-serif; fill: #1e293b; }
+      .label { font: 16px sans-serif; fill: #243447; }
+      .small { font: 14px sans-serif; fill: #475569; }
+      .mono { font: 15px monospace; fill: #243447; }
+      .rank { fill: #f8fafc; stroke: #64748b; stroke-width: 2; }
+      .device { fill: #e8f3ff; stroke: #1769aa; stroke-width: 2; }
+      .window { fill: #eff8ee; stroke: #2b7a4b; stroke-width: 2; }
+      .ghost { fill: #fff3cd; stroke: #b7791f; stroke-width: 2; }
+      .boundary { fill: #dbeafe; stroke: #1769aa; stroke-width: 2; }
+      .line-blue { stroke: #1769aa; stroke-width: 4; fill: none; marker-end: url(#arrow-blue); }
+      .line-green { stroke: #2b7a4b; stroke-width: 4; fill: none; marker-end: url(#arrow-green); }
+      .dashed { stroke-dasharray: 9 7; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="690" fill="#ffffff"/>
+  <text x="600" y="45" text-anchor="middle" class="title">MPI RMA: MPI_Get from a GPU window</text>
+  <text x="600" y="75" text-anchor="middle" class="small">The target rank exposes memory; the origin rank initiates the remote read.</text>
+
+  <rect x="55" y="115" width="500" height="360" rx="8" class="rank"/>
+  <rect x="645" y="115" width="500" height="360" rx="8" class="rank"/>
+  <text x="305" y="153" text-anchor="middle" class="heading">Rank 0: origin / requester</text>
+  <text x="895" y="153" text-anchor="middle" class="heading">Rank 1: target / memory owner</text>
+
+  <rect x="90" y="185" width="430" height="235" rx="8" class="device"/>
+  <text x="305" y="215" text-anchor="middle" class="label">CUDA device allocation: current</text>
+  <rect x="125" y="245" width="360" height="42" rx="5" class="ghost"/>
+  <text x="305" y="272" text-anchor="middle" class="label">top ghost row: origin buffer</text>
+  <rect x="125" y="298" width="360" height="42" rx="5" class="boundary"/>
+  <text x="305" y="325" text-anchor="middle" class="label">real rows owned by rank 0</text>
+  <rect x="125" y="351" width="360" height="42" rx="5" class="boundary"/>
+  <text x="305" y="378" text-anchor="middle" class="label">bottom real row</text>
+
+  <rect x="680" y="185" width="430" height="235" rx="8" class="window"/>
+  <text x="895" y="215" text-anchor="middle" class="label">MPI window: win_u</text>
+  <text x="895" y="238" text-anchor="middle" class="small">exposes rank 1's CUDA allocation</text>
+  <rect x="715" y="265" width="360" height="42" rx="5" class="boundary"/>
+  <text x="895" y="292" text-anchor="middle" class="label">first real row: target displacement nx</text>
+  <rect x="715" y="318" width="360" height="42" rx="5" class="boundary"/>
+  <text x="895" y="345" text-anchor="middle" class="label">interior rows</text>
+  <rect x="715" y="371" width="360" height="42" rx="5" class="ghost"/>
+  <text x="895" y="398" text-anchor="middle" class="label">last real row: target displacement rows * nx</text>
+
+  <path d="M485 266 C570 210, 640 210, 715 386" class="line-blue"/>
+  <text x="600" y="96" text-anchor="middle" class="mono">MPI_Get(origin, ..., rank 1, target displacement)</text>
+  <text x="600" y="112" text-anchor="middle" class="small">remote read into rank 0's top ghost row</text>
+
+  <path d="M305 510 L895 510" class="line-green"/>
+  <text x="600" y="497" text-anchor="middle" class="mono">MPI_Win_flush_all(current_window)</text>
+  <text x="600" y="545" text-anchor="middle" class="small">wait for outstanding RMA reads to complete</text>
+
+  <rect x="170" y="580" width="860" height="64" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+  <text x="600" y="607" text-anchor="middle" class="label">After flush: cudaDeviceSynchronize()  ->  step(current, next, ...) reads the filled ghost row</text>
+  <text x="600" y="630" text-anchor="middle" class="small">MPI_Get may return before the data is ready; flush is the RMA completion point used here.</text>
+</svg>
