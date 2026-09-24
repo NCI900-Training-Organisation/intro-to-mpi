@@ -20,6 +20,8 @@ debugging, portability, and performance.
 | Packed and datatype strided halos | `08-strided-halo.cu` |
 | Managed-memory communication | `09-managed-memory.cu` |
 | Device selection before `MPI_Init` | `10-preinit-device.cu` |
+| CUDA stream ordering around MPI | `12-stream-aware-mpi.cu` |
+
 
 ## Quick start on Gadi
 

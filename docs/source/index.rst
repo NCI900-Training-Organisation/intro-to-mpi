@@ -80,3 +80,5 @@ Core hands-on route
    17-coverage-map
    18-cuda-aware-mpi-diagnostics
    19-mpi-rma-gpu
+  20-cuda-stream-aware-mpi
+  21-gpu-aware-mpi-best-practices

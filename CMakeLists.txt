@@ -22,7 +22,8 @@ set(WORKSHOP_TARGETS
     07-device-collectives
     08-strided-halo
     09-managed-memory
-    10-preinit-device)
+    10-preinit-device
+    12-stream-aware-mpi)
 
 foreach(target IN LISTS WORKSHOP_TARGETS)
   add_executable(${target} "src/${target}.cu")
