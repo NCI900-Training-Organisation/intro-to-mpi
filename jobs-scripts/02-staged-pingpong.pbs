@@ -8,13 +8,13 @@
 #PBS -l walltime=00:10:00
 #PBS -l storage=scratch/jxj900+gdata/vp91
 #PBS -l wd
-#PBS -N mpi-staged
+#PBS -N 02-mpi-staged
 #PBS -j oe
 
 
 set -eu
 module purge
-module load cuda/11.4.1 openmpi/4.1.5
+module load cuda/12.9.0 openmpi/4.1.5
 
 
-mpirun -np 2 --map-by ppr:2:node build/bin/02-staged-pingpong 4194304
+mpirun -np 2 --map-by ppr:2:node /scratch/vp91/$USER/intro-to-mpi/build/bin/02-staged-pingpong 4194304
