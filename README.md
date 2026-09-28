@@ -104,17 +104,14 @@ PBS scripts. Otherwise these tools must already be on `PATH`. Compilation is
 separate from PBS submission; do not compile on login nodes. If an existing
 `build/` uses another toolchain, prepare a fresh build directory before running.
 
-## Submit and inspect a PBS job
+## Submit a PBS job and check status
 
 From the repository root, after building the example:
 
 ```bash
-bash job-script/submit-job.sh 04-jacobi-blocking.pbs
-bash job-script/view-output.sh 04-jacobi-blocking.pbs
+qsub job-script/04-jacobi-blocking.pbs
+qstat
 ```
 
-Submission saves the job ID and redirects merged output into a unique directory
-under `.pbs-jobs/`. Rerun only the viewing command to check status and output.
-It selects the latest submission for that PBS filename. For an older run, pass
-its printed `job.txt` path to `view-output.sh`. These records survive notebook
-kernel restarts and are ignored by Git. Output may arrive only after completion.
+Run `qsub` once to submit. Rerun `qstat` to check the queue without resubmitting.
+`qstat` reports job status, not application output.
