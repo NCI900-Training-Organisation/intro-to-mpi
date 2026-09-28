@@ -57,3 +57,4 @@ dkms.conf
 AGENTS.md
 build
 .pbs-jobs/
+notebooks/.ipynb_checkpoints
