@@ -1,0 +1,24 @@
+#!/bin/bash
+#PBS -P vp91
+#PBS -q gpuvolta
+#PBS -l ncpus=24
+#PBS -l ngpus=2
+#PBS -l mem=8gb
+#PBS -l jobfs=1GB
+#PBS -l walltime=00:10:00
+#PBS -l storage=scratch/jxj900+gdata/vp91
+#PBS -l wd
+#PBS -N 01-cuda-mpi-map
+#PBS -j oe
+
+
+set -eu
+module purge
+module load cuda/12.9.0 openmpi/4.1.5
+
+# Open MPI rank placement: "ppr:2:node" means "2 processes per resource,
+# where the resource is a node". For this two-rank job, both MPI ranks are
+# placed on the same node, which matches the requested 2-GPU allocation.
+# This keeps each rank close to a local GPU and makes the node-local device
+# selection in the example deterministic.
+mpirun -np 2 --map-by ppr:2:node /scratch/vp91/$USER/intro-to-mpi/build/bin/01-rank-device

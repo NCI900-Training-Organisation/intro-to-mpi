@@ -1,0 +1,15 @@
+blocking Jacobi: 64x64, 2 ranks, 200 iterations, 0.004 s, sample sum 2.497372790776e-01
+
+======================================================================================
+                  Resource Usage on 2026-09-28 13:16:43:
+   Job Id:             180014131.gadi-pbs
+   Project:            vp91
+   Exit Status:        0
+   Service Units:      0.06
+   NCPUs Requested:    24                  CPU Time Used: 00:00:02        
+   Memory Requested:   8.0GB                 Memory Used: 1.26GB          
+   NGPUs Requested:    2                 GPU Utilisation: 0%              
+                                         GPU Memory Used: 0B              
+   Walltime Requested: 00:15:00            Walltime Used: 00:00:03        
+   JobFS Requested:    1.0GB                  JobFS Used: 0B              
+======================================================================================

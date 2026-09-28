@@ -1,0 +1,15 @@
+stream-aware MPI: 2 ranks, 1048576 values, first received value 2.0
+
+======================================================================================
+                  Resource Usage on 2026-09-28 13:16:48:
+   Job Id:             180014272.gadi-pbs
+   Project:            vp91
+   Exit Status:        0
+   Service Units:      0.08
+   NCPUs Requested:    24                  CPU Time Used: 00:00:03        
+   Memory Requested:   8.0GB                 Memory Used: 1.39GB          
+   NGPUs Requested:    2                 GPU Utilisation: 0%              
+                                         GPU Memory Used: 0B              
+   Walltime Requested: 00:10:00            Walltime Used: 00:00:04        
+   JobFS Requested:    1.0GB                  JobFS Used: 0B              
+======================================================================================
