@@ -32,7 +32,7 @@ $ module purge
 $ module load cuda/11.4.1 openmpi/4.1.5 cmake
 $ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=70
 $ cmake --build build --parallel
-$ qsub jobs-scripts/01-rank-device.pbs
+$ qsub job-script/01-rank-device.pbs
 ```
 
 The PBS scripts only run executables already built in `build/bin`; they do not
@@ -68,7 +68,7 @@ default `build/bin` output directory to be visible on the compute nodes.
 
 - `src/` — numbered CUDA/MPI source files
 - `CMakeLists.txt` — CMake build definition for all examples
-- `jobs-scripts/` — numbered PBS Pro scripts for Gadi
+- `job-script/` — numbered PBS Pro scripts for Gadi
 - `docs/source/` — Sphinx/Read the Docs workshop content
 - `docs/requirements.txt` — pinned documentation dependencies
 
@@ -87,3 +87,34 @@ $ sphinx-build -M html docs/source docs/_build
 ## Licence
 
 BSD 3-Clause; see [LICENSE](LICENSE).
+
+## Build a single example from a notebook
+
+Run the notebook working-directory setup first. From an allocated compute-node
+session, use the shared script with a source filename:
+
+```bash
+bash build-script/build-src.sh 04-jacobi-blocking.cu
+```
+
+The script also accepts `src/04-jacobi-blocking.cu`. It configures CMake and
+builds only the matching target in `build/bin`. When environment modules are
+available, it loads CUDA 12.9.0, Open MPI 4.1.5, and CMake, matching the runtime
+PBS scripts. Otherwise these tools must already be on `PATH`. Compilation is
+separate from PBS submission; do not compile on login nodes. If an existing
+`build/` uses another toolchain, prepare a fresh build directory before running.
+
+## Submit and inspect a PBS job
+
+From the repository root, after building the example:
+
+```bash
+bash job-script/submit-job.sh 04-jacobi-blocking.pbs
+bash job-script/view-output.sh 04-jacobi-blocking.pbs
+```
+
+Submission saves the job ID and redirects merged output into a unique directory
+under `.pbs-jobs/`. Rerun only the viewing command to check status and output.
+It selects the latest submission for that PBS filename. For an older run, pass
+its printed `job.txt` path to `view-output.sh`. These records survive notebook
+kernel restarts and are ignored by Git. Output may arrive only after completion.

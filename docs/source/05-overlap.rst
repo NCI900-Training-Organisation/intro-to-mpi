@@ -7,7 +7,7 @@ rows. Submit it with:
 
 .. code-block:: console
 
-   $ qsub jobs-scripts/05-jacobi-overlap.pbs
+   $ qsub job-script/05-jacobi-overlap.pbs
 
 .. code-block:: text
 

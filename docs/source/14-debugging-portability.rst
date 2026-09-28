@@ -35,7 +35,7 @@ Initialisation order is another implementation difference. Some MPI libraries
 create accelerator state in ``MPI_Init`` and need the device selected first;
 others initialise lazily. ``10-preinit-device.cu`` recognises common launcher
 local-rank variables, selects CUDA before ``MPI_Init``, then verifies the choice
-with ``MPI_Comm_split_type``. Run ``jobs-scripts/10-preinit-device.pbs``.
+with ``MPI_Comm_split_type``. Run ``job-script/10-preinit-device.pbs``.
 
 Intel GPU clusters pose the same execution-model questions but use different
 APIs: SYCL USM or OpenMP target device pointers, Level Zero topology, Intel MPI

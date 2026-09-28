@@ -37,7 +37,7 @@ Start in a clone on a filesystem visible to compute nodes, then submit:
 
 .. code-block:: console
 
-   $ qsub jobs-scripts/01-rank-device.pbs
+   $ qsub job-script/01-rank-device.pbs
    $ qstat -swx <job-id>
    $ less cuda-mpi-map.o<job-id>
 
@@ -52,7 +52,7 @@ How each MPI rank gets a different GPU
 --------------------------------------
 
 The example code is in [src/01-rank-device.cu](src/01-rank-device.cu), and the
-matching launcher is [jobs-scripts/01-rank-device.pbs](jobs-scripts/01-rank-device.pbs).
+matching launcher is [job-script/01-rank-device.pbs](job-script/01-rank-device.pbs).
 The key idea is that a rank should not blindly use its global MPI rank as a
 GPU number. Global rank 2 on a second node is not the same as GPU 2 on the
 first node.

@@ -21,7 +21,7 @@ does not prove that GPUDirect RDMA was used.
   :alt: CUDA-aware MPI identifies a device pointer and chooses a direct transport or internal host-staging fallback
   :width: 100%
 
-Run ``qsub jobs-scripts/03-device-pingpong.pbs`` and compare its output with
+Run ``qsub job-script/03-device-pingpong.pbs`` and compare its output with
 the staged run. Direct syntax does not prove GPUDirect RDMA occurred; the MPI
 implementation may choose CUDA IPC, GPUDirect RDMA, or an internal bounce
 buffer according to locality, size, hardware, and configuration.

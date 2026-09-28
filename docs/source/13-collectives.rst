@@ -17,7 +17,7 @@ critical path.
 ``07-device-collectives.cu`` is that test for ``MPI_Allreduce``. It creates its
 input on the GPU, reduces into a second device allocation, copies back only for
 verification, and prints ``PASS`` on every rank. Run it with
-``qsub jobs-scripts/07-device-collectives.pbs`` before relying on collectives.
+``qsub job-script/07-device-collectives.pbs`` before relying on collectives.
 
 A portable reduction pattern is to compute one scalar per rank on the GPU,
 copy that scalar to host memory, and reduce the host scalar:

@@ -61,12 +61,12 @@ rely on undocumented cache behavior.
 Hands-on: noncontiguous and managed buffers
 -------------------------------------------
 
-Submit ``jobs-scripts/08-strided-halo.pbs``. Its ``packed`` mode gathers a
+Submit ``job-script/08-strided-halo.pbs``. Its ``packed`` mode gathers a
 matrix column into contiguous device memory with a CUDA kernel. Its
 ``datatype`` mode passes an ``MPI_Type_vector`` over device memory directly;
 this is deliberately a capability test because support and performance vary.
 
-Submit ``jobs-scripts/09-managed-memory.pbs`` to communicate a
+Submit ``job-script/09-managed-memory.pbs`` to communicate a
 ``cudaMallocManaged`` allocation. It establishes kernel completion, performs
 MPI, and prefetches the page to the CPU before host access. Compare this with
 ``cudaMalloc``: correctness does not imply equal performance because page

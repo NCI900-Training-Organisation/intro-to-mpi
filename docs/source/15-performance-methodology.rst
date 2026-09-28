@@ -16,7 +16,7 @@ Separate warm-up iterations from measured iterations.
 ``06-bandwidth.cu`` sweeps power-of-two sizes from one byte to 64 MiB with
 warm-ups and repeated measurements. Its pinned-host column times MPI only;
 explicit device-to-host and host-to-device copies must be included when
-comparing complete staged application paths. ``jobs-scripts/06-bandwidth.pbs``
+comparing complete staged application paths. ``job-script/06-bandwidth.pbs``
 runs two GPUs within a node. To exercise scale-out, copy the script for a local
 experiment, request two complete GPU nodes, and change the MPI placement to
 one rank per node; verify current Gadi resource policy before submission.

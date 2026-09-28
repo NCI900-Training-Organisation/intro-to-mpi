@@ -48,7 +48,7 @@ around MPI calls.
 
 .. code-block:: console
 
-   $ qsub jobs-scripts/04-jacobi-blocking.pbs
+   $ qsub job-script/04-jacobi-blocking.pbs
 
 The standard job uses two ranks and two GPUs on one node. Arguments are
 ``nx ny iterations`` and ``ny`` must divide by the rank count. Timing uses the

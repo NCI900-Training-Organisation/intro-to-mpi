@@ -21,7 +21,7 @@ Run the baseline:
 
 .. code-block:: console
 
-   $ qsub jobs-scripts/02-staged-pingpong.pbs
+   $ qsub job-script/02-staged-pingpong.pbs
 
 ``02-staged-pingpong.cu`` uses ``cudaMallocHost`` because page-locked memory
 supports faster and asynchronous CUDA copies. The blocking ``cudaMemcpy`` also

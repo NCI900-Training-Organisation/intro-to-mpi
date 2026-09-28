@@ -1,8 +1,8 @@
 Performance experiment
 ======================
 
-Submit ``jobs-scripts/04-jacobi-blocking.pbs`` and
-``jobs-scripts/05-jacobi-overlap.pbs`` to compare the two solver versions.
+Submit ``job-script/04-jacobi-blocking.pbs`` and
+``job-script/05-jacobi-overlap.pbs`` to compare the two solver versions.
 For a size sweep, change the ``nx``, ``ny``, and iteration arguments in both
 scripts identically and copy the results into a table:
 
