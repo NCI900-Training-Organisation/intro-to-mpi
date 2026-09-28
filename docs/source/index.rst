@@ -47,8 +47,12 @@ Core hands-on route
      - Distributed blocking solver
    * - :doc:`05-overlap`
      - Nonblocking overlapped solver
-   * - :doc:`06-performance`
-     - Benchmark and interpretation
+   * - :doc:`20-cuda-stream-aware-mpi`
+     - Explicit CUDA stream ordering around MPI
+   * - :doc:`18-cuda-aware-mpi-diagnostics`
+     - Investigate CUDA-aware support and transport evidence
+   * - :doc:`21-gpu-aware-mpi-best-practices`
+     - Apply correctness and performance checks
 
 .. toctree::
    :maxdepth: 2
@@ -60,13 +64,16 @@ Core hands-on route
    03-cuda-aware
    04-jacobi
    05-overlap
-   06-performance
+   20-cuda-stream-aware-mpi
+   18-cuda-aware-mpi-diagnostics
+   21-gpu-aware-mpi-best-practices
 
 .. toctree::
    :maxdepth: 2
    :caption: Extended topics and reference
    :numbered:
 
+   06-performance
    07-reference
    08-mpi-fundamentals
    09-cuda-memory
@@ -78,7 +85,4 @@ Core hands-on route
    15-performance-methodology
    16-alternatives-and-future
    17-coverage-map
-   18-cuda-aware-mpi-diagnostics
    19-mpi-rma-gpu
-  20-cuda-stream-aware-mpi
-  21-gpu-aware-mpi-best-practices
