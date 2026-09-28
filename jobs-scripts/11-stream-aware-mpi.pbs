@@ -8,7 +8,7 @@
 #PBS -l walltime=00:10:00
 #PBS -l storage=scratch/jxj900+gdata/vp91
 #PBS -l wd
-#PBS -N 11-jacobi-rma
+#PBS -N 11-stream-aware
 #PBS -j oe
 
 
@@ -17,4 +17,4 @@ module purge
 module load cuda/12.9.0 openmpi/4.1.5
 
 
-mpirun -np 2 --map-by ppr:2:node /scratch/vp91/$USER/intro-to-mpi/build/bin/11-jacobi-rma
+mpirun -np 2 --map-by ppr:2:node /scratch/vp91/$USER/intro-to-mpi/build/bin/12-stream-aware-mpi
