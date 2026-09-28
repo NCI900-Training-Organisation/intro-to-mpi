@@ -14,7 +14,7 @@
 
 set -eu
 module purge
-module load cuda/11.4.1 openmpi/4.1.5
+module load cuda/12.9.0 openmpi/4.1.5
 
 # Open MPI rank placement: "ppr:2:node" means "2 processes per resource,
 # where the resource is a node". For this two-rank job, both MPI ranks are
