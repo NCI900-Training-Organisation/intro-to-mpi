@@ -115,3 +115,28 @@ qstat
 
 Run `qsub` once to submit. Rerun `qstat` to check the queue without resubmitting.
 `qstat` reports job status, not application output.
+
+## Compare transfers after warm-up
+
+On an allocated compute node, build the comparison, then submit its runtime job:
+
+```bash
+bash build-script/build-src.sh 13-warmup-run.cu
+qsub job-script/13-warmup-run.pbs
+qstat
+```
+
+`13-warmup-run` requires two ranks and accepts a positive float count (default
+1,048,576). Edit the PBS argument to test 1, 1024, 1048576, or 16777216 floats.
+It performs exactly two untimed warm-up exchanges for each method, followed by
+one timed exchange. Staged time includes device-to-host copying, MPI, and
+host-to-device copying; device-direct time includes MPI and any internal staging.
+Initialization, barriers, and full-buffer validation are excluded. Each reported
+time is the maximum across the two ranks. Both lines should report `received 1`
+and `validation PASS`. A validation failure gives a nonzero exit status.
+
+The direct method requires CUDA-aware point-to-point support and does not prove
+GPUDirect use. Both methods use `MPI_Sendrecv_replace`; temporary buffering costs
+remain part of the transfer. Staging always runs first, so repeat runs (and test
+reversed order when studying order effects) before making performance claims.
+Two warm-ups do not guarantee all setup costs have disappeared.
