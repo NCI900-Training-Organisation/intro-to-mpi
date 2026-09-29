@@ -111,6 +111,30 @@ Several effects could contribute to the difference:
    transport logging for timing runs. A comparison with separate send and receive
    buffers can also help isolate the cost of buffer replacement.
 
+Results after two warm-up exchanges
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``13-warmup-run`` example compares both methods in the same program. Each
+method performs two untimed warm-up exchanges followed by one timed exchange.
+
+.. code-block:: text
+
+   staged: 1048576 floats, 4.000000 MiB/rank, 2 warm-ups, 1 timed exchange, 2.441 ms, received 1, validation PASS
+   device-direct: 1048576 floats, 4.000000 MiB/rank, 2 warm-ups, 1 timed exchange, 2.425 ms, received 1, validation PASS
+
+.. list-table:: Warmed-up transfer comparison
+   :header-rows: 1
+
+   * - Method
+     - Time (ms)
+     - Validation
+   * - Host-staged
+     - 2.441
+     - PASS
+   * - Device-buffer
+     - 2.425
+     - PASS
+
 
 How MPI finds device memory
 ---------------------------
