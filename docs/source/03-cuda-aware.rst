@@ -112,21 +112,18 @@ two warm-ups; these historical measurements are not 100-exchange averages.
 
 .. code-block:: text
 
-   staged: 1048576 floats, 4.000000 MiB/rank, 2 warm-ups, 1 timed exchange, 2.441 ms, received 1, validation PASS
-   device-direct: 1048576 floats, 4.000000 MiB/rank, 2 warm-ups, 1 timed exchange, 2.425 ms, received 1, validation PASS
+   staged: 1048576 floats, 4.000000 MiB/rank, 2 warm-ups, 1 timed exchange, 2.435 ms, received 1, validation PASS
+   device-direct: 1048576 floats, 4.000000 MiB/rank, 2 warm-ups, 1 timed exchange, 2.153 ms, received 1, validation PASS
 
 .. list-table:: Warmed-up transfer comparison
    :header-rows: 1
 
    * - Method
      - Time (ms)
-     - Validation
    * - Host-staged
-     - 2.441
-     - PASS
+     - 2.435
    * - Device-buffer
-     - 2.425
-     - PASS
+     - 2.153 
 
 
 How MPI finds device memory
