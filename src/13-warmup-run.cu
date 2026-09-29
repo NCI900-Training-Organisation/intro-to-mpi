@@ -3,7 +3,7 @@
 #include <climits>
 
 
-/* Compare one staged and one device-buffer exchange after two warm-ups each.
+/* Compare 100 staged and 100 device-buffer exchanges after two warm-ups each.
  * Both paths use Sendrecv_replace, matching examples 02 and 03. Device-buffer
  * MPI requires CUDA-aware support; it does not guarantee GPUDirect transport.
  */
@@ -70,6 +70,7 @@ int main(int argc, char **argv)
   CUDA_CHECK(cudaMalloc(&device, bytes));
   CUDA_CHECK(cudaMallocHost(&host, bytes));
   const int warmups = 2;
+  const int runs = 100;
   int any_failure = 0;
 
 
@@ -84,13 +85,15 @@ int main(int argc, char **argv)
     }
 
 
-    /* Two swaps restore the original values. Time only the third exchange.
+    /* Time the full batch, then report the average time per exchange.
      * Blocking MPI and blocking staging copies establish completion here.
      * The barrier, reductions, and result validation are outside the timer.
      */
     MPI_CHECK(MPI_Barrier(MPI_COMM_WORLD));
     double start = MPI_Wtime();
-    exchange(device, host, count, 1 - rank, staged);
+    for (int i = 0; i < runs; ++i) {
+      exchange(device, host, count, 1 - rank, staged);
+    }
     double local_time = MPI_Wtime() - start;
     double elapsed;
     MPI_CHECK(MPI_Reduce(&local_time, &elapsed, 1, MPI_DOUBLE, MPI_MAX, 0,
@@ -99,9 +102,11 @@ int main(int argc, char **argv)
 
     /* Check every received element outside the timed region on both ranks. */
     CUDA_CHECK(cudaMemcpy(host, device, bytes, cudaMemcpyDeviceToHost));
+    /* Each exchange swaps the contents; an even total restores our rank. */
+    float expected = (float)(((warmups + runs) % 2 == 0) ? rank : 1 - rank);
     int failed = 0;
     for (int i = 0; i < count; ++i) {
-      if (host[i] != (float)(1 - rank)) {
+      if (host[i] != expected) {
         failed = 1;
         break;
       }
@@ -112,9 +117,9 @@ int main(int argc, char **argv)
     any_failure |= global_failure;
     if (!rank) {
       std::printf("%s: %d floats, %.6f MiB/rank, 2 warm-ups, "
-                  "1 timed exchange, %.3f ms, received %.0f, validation %s\n",
+                  "%d timed exchanges, average %.3f ms/exchange, final sample %.0f, validation %s\n",
                   staged ? "staged" : "device-direct", count,
-                  bytes / 1048576.0, elapsed * 1e3, host[0],
+                  bytes / 1048576.0, runs, elapsed * 1e3 / runs, host[0],
                   global_failure ? "FAIL" : "PASS");
     }
   }

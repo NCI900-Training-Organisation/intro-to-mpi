@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.18)
 
+# Select the MPI wrapper before CMake enables and detects the C++ compiler.
+find_program(MPI_CXX_WRAPPER NAMES mpicxx REQUIRED)
+set(CMAKE_CXX_COMPILER "${MPI_CXX_WRAPPER}" CACHE FILEPATH "MPI C++ compiler" FORCE)
+set(CMAKE_CUDA_RUNTIME_LIBRARY Shared)
+
 project(cuda_aware_mpi_workshop LANGUAGES CXX CUDA)
 
 find_package(MPI REQUIRED COMPONENTS CXX)

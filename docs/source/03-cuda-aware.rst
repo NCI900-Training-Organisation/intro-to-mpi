@@ -25,10 +25,10 @@ Virtual Addressing and chooses a device-capable path when one is available.
 
 .. note::
 
-   Unified Virtual Address Space: A single virtual address space is used for all host memory and all global memory on all GPUs in 
-   the system within a single OS process. All memory allocations on the host and on all devices lie in this virtual address space. 
-   
-   This is true whether allocations are made with CUDA APIs ( cudaMalloc, cudaMallocHost) or with system allocation APIs 
+   Unified Virtual Address Space: A single virtual address space is used for all host memory and all global memory on all GPUs in
+   the system within a single OS process. All memory allocations on the host and on all devices lie in this virtual address space.
+
+   This is true whether allocations are made with CUDA APIs ( cudaMalloc, cudaMallocHost) or with system allocation APIs
    (new, malloc). The CPU and each GPU has a unique range within the unified virtual address space.
 
 
@@ -82,40 +82,33 @@ prints only one decimal place.
 
 The device-buffer version may be slower in these measurements. Passing a
 GPU pointer does not guarantee a faster
-transfer. 
-
-Several effects could contribute to the difference:
-
-* **First-use overhead:** each program times only one exchange. The first
-  device-buffer operation may include GPU-memory registration, establishing
-  interprocess GPU access, or other transport setup. Fixed costs matter most
-  when the payload is tiny.
-* **Internal staging:** MPI may copy through host buffers internally. In that
-  case, passing a device pointer does not remove staging and can add buffer
-  management overhead compared with explicit pinned-host staging.
-* **Buffer replacement:** both examples use ``MPI_Sendrecv_replace``. MPI must
-  preserve outgoing values while receiving into the same buffer, which can
-  require temporary storage or extra copying. Its cost can differ between
-  host and device buffers.
+transfer.
 
 .. note::
 
-   These are possible explanations, not diagnoses established by the timings.
-   The logs would need to identify the selected transport and protocol to explain
-   the actual path.
+   Several effects could contribute to the difference:
 
-   For a more reliable comparison, use the same modules, rank/GPU placement, and
-   message sizes; perform untimed warm-up exchanges on the same allocations; then
-   time many exchanges and report time per exchange over repeated runs. Keep both
-   CUDA staging copies inside every timed staged iteration. Disable verbose
-   transport logging for timing runs. A comparison with separate send and receive
-   buffers can also help isolate the cost of buffer replacement.
+   MPI libraries can choose different ways to transfer data depending on factors such as where
+   the data is stored and how large the message is. Although GPUDirect can transfer data directly
+   between GPU memory and the network device, it is not always the fastest because
+   PCIe P2P access between the GPU and network device can have relatively high latency,
+   while host-memory staging may sometimes allow better overlap with other GPU work.
+
+   Also, ``MPI_Sendrecv_replace`` is a relatively complex operation because the same buffer is
+   used for both sending and receiving. Depending on the MPI implementation, it may require
+   additional internal buffering or memory operations, which can introduce overhead for
+   GPU-resident buffers.
+
+
+
 
 Results after two warm-up exchanges
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``13-warmup-run`` example compares both methods in the same program. Each
-method performs two untimed warm-up exchanges followed by one timed exchange.
+The measurements below were collected with the earlier ``13-warmup-run``
+version, using two untimed warm-up exchanges followed by one timed exchange
+per method. The current program instead averages 100 timed exchanges after
+two warm-ups; these historical measurements are not 100-exchange averages.
 
 .. code-block:: text
 
@@ -144,10 +137,10 @@ GPUs on a node in one virtual address space. CUDA-aware MPI can inspect the
 pointer address and determine whether a buffer is on the host or on a device,
 without changing the MPI API or adding a separate device-buffer argument. UVA
 is an address-identification mechanism; it does not guarantee a particular
-transport or that a transfer will avoid host memory. 
+transport or that a transfer will avoid host memory.
 
 
-.. note:: 
+.. note::
 
    Staging is still useful: It is portable to non-CUDA-aware MPI builds, can be easier to debug, and may
    beat direct paths for some small messages or poorly configured networks. Treat
@@ -199,7 +192,7 @@ Inspect the loaded implementation and its build-time CUDA support:
 | ``component:4.1.5``                  | Component version is Open MPI 4.1.5.              |
 +--------------------------------------+--------------------------------------------------+
 
-The exact output is version-dependent. 
+The exact output is version-dependent.
 
 A CUDA-aware MPI build is necessary but not sufficient: the hardware, PCIe or
 NVLink topology, network fabric, and runtime transport selection must also

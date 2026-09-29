@@ -129,10 +129,10 @@ qstat
 `13-warmup-run` requires two ranks and accepts a positive float count (default
 1,048,576). Edit the PBS argument to test 1, 1024, 1048576, or 16777216 floats.
 It performs exactly two untimed warm-up exchanges for each method, followed by
-one timed exchange. Staged time includes device-to-host copying, MPI, and
+100 timed exchanges. Staged time includes device-to-host copying, MPI, and
 host-to-device copying; device-direct time includes MPI and any internal staging.
 Initialization, barriers, and full-buffer validation are excluded. Each reported
-time is the maximum across the two ranks. Both lines should report `received 1`
+average is the maximum batch time across the two ranks divided by 100. Both lines should report `final sample 0` (102 exchanges restore the original values on rank 0)
 and `validation PASS`. A validation failure gives a nonzero exit status.
 
 The direct method requires CUDA-aware point-to-point support and does not prove
@@ -140,3 +140,8 @@ GPUDirect use. Both methods use `MPI_Sendrecv_replace`; temporary buffering cost
 remain part of the transfer. Staging always runs first, so repeat runs (and test
 reversed order when studying order effects) before making performance claims.
 Two warm-ups do not guarantee all setup costs have disappeared.
+
+CMake uses `mpicxx` as the C++ compiler and links the shared CUDA runtime
+(`libcudart.so`). CUDA source compilation still uses `nvcc`. After changing
+from an existing compiler configuration, move the old `build/` directory aside
+and configure a fresh `build/` with the same CUDA and MPI modules used at run time.
