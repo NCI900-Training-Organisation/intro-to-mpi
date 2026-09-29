@@ -1,16 +1,17 @@
-CUDA-aware MPI on Gadi
+CUDA-aware MPI 
 ======================
 
-This documentation is a comprehensive guide to using MPI with CUDA GPUs. It
-builds one application—a distributed 2-D Jacobi heat solver—in stages, then
-extends the core material with memory models, transport paths, collectives,
-topology, debugging, portability, and performance methodology.
+This documentation is an introductory guide to using MPI with CUDA GPUs.
 
 .. note::
 
    The examples target NCI Gadi, project ``vp91``, queue ``gpuvolta``, and
-   NVIDIA Volta GPUs. Module versions and queue policy change: run
-   ``module avail cuda openmpi`` and check NCI documentation before teaching.
+   NVIDIA Volta GPUs. 
+  
+
+  Participants should know basic C/C++, CUDA kernels, and MPI point-to-point
+  calls.
+
 
 Learning outcomes
 -----------------
@@ -25,9 +26,8 @@ By the end you can
 
  #. Manage CUDA/MPI synchronisation
 
- #. Implement direct halo exchanges
 
- #. Overlap interior computation with communication
+ #. Overlap GPU computation with communication
 
 Core hands-on route
 -------------------
@@ -55,7 +55,7 @@ Core hands-on route
      - Apply correctness and performance checks
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Core workshop
    :numbered:
 

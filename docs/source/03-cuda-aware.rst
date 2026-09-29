@@ -7,15 +7,31 @@ code passes that pointer directly, without changing the MPI API:
 
 .. code-block:: c++
 
-   cudaDeviceSynchronize();
-   MPI_Sendrecv_replace(device, count, MPI_FLOAT, peer, 0,
-                        peer, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+   MPI_Sendrecv_replace(
+      h,                  /* pinned host buffer: send its contents, then replace with received data */
+      (int)n,             /* number of elements to send and space for received elements */
+      MPI_FLOAT,          /* datatype of each buffer element */
+      1 - rank,           /* destination: the other rank (0 sends to 1, 1 sends to 0) */
+      0,                  /* send tag identifying the outgoing message */
+      1 - rank,           /* source: receive from the other rank */
+      0,                  /* receive tag matching the incoming message */
+      MPI_COMM_WORLD,     /* communicator containing both ranks */
+      MPI_STATUS_IGNORE   /* discard receive status, such as sender and message tag */
+   );
 
 The data path is summarized below. The application passes the ``cudaMalloc``
 pointer directly to MPI; CUDA-aware MPI classifies the pointer through Unified
 Virtual Addressing and chooses a device-capable path when one is available.
-It may instead manage an internal pinned-host fallback, so the call syntax alone
-does not prove that GPUDirect RDMA was used.
+
+.. note::
+
+   Unified Virtual Address Space: A single virtual address space is used for all host memory and all global memory on all GPUs in 
+   the system within a single OS process. All memory allocations on the host and on all devices lie in this virtual address space. 
+   
+   This is true whether allocations are made with CUDA APIs ( cudaMalloc, cudaMallocHost) or with system allocation APIs 
+   (new, malloc). The CPU and each GPU has a unique range within the unified virtual address space.
+
+
 
 .. image:: images/04-cuda-aware-pipeline.png
   :alt: CUDA-aware MPI identifies a device pointer and chooses a direct transport or internal host-staging fallback
@@ -26,6 +42,76 @@ the staged run. Direct syntax does not prove GPUDirect RDMA occurred; the MPI
 implementation may choose CUDA IPC, GPUDirect RDMA, or an internal bounce
 buffer according to locality, size, hardware, and configuration.
 
+Sample results
+--------------
+
+The following device-buffer measurements use the same element-count order as
+the exercise in :doc:`02-staging`: 1, 1 Ki, 1 Mi, and 16 Mi floats. The staged
+measurements from that chapter are included for comparison. Each float occupies
+4 bytes; the two smallest sizes print as ``0.0 MiB/rank`` because the program
+prints only one decimal place.
+
+.. list-table:: Single-exchange timings
+   :header-rows: 1
+
+   * - Float count
+     - Data per rank
+     - Device-buffer time (ms)
+     - Staged time (ms)
+     - Received sample
+   * - 1
+     - 4 bytes
+     - 1.058
+     - 0.047
+     - 1
+   * - 1 Ki (1,024)
+     - 4 KiB
+     - 1.185
+     - 0.112
+     - 1
+   * - 1 Mi (1,048,576)
+     - 4 MiB
+     - 9.978
+     - 6.276
+     - 1
+   * - 16 Mi (16,777,216)
+     - 64 MiB
+     - 113.863
+     - 100.367
+     - 1
+
+The device-buffer version may be slower in these measurements. Passing a
+GPU pointer does not guarantee a faster
+transfer. 
+
+Several effects could contribute to the difference:
+
+* **First-use overhead:** each program times only one exchange. The first
+  device-buffer operation may include GPU-memory registration, establishing
+  interprocess GPU access, or other transport setup. Fixed costs matter most
+  when the payload is tiny.
+* **Internal staging:** MPI may copy through host buffers internally. In that
+  case, passing a device pointer does not remove staging and can add buffer
+  management overhead compared with explicit pinned-host staging.
+* **Buffer replacement:** both examples use ``MPI_Sendrecv_replace``. MPI must
+  preserve outgoing values while receiving into the same buffer, which can
+  require temporary storage or extra copying. Its cost can differ between
+  host and device buffers.
+
+.. note::
+
+   These are possible explanations, not diagnoses established by the timings.
+   The logs would need to identify the selected transport and protocol to explain
+   the actual path.
+
+   For a more reliable comparison, use the same modules, rank/GPU placement, and
+   message sizes; perform untimed warm-up exchanges on the same allocations; then
+   time many exchanges and report time per exchange over repeated runs. Keep both
+   CUDA staging copies inside every timed staged iteration. Disable verbose
+   transport logging for timing runs. A comparison with separate send and receive
+   buffers can also help isolate the cost of buffer replacement.
+
+
 How MPI finds device memory
 ---------------------------
 
@@ -34,29 +120,16 @@ GPUs on a node in one virtual address space. CUDA-aware MPI can inspect the
 pointer address and determine whether a buffer is on the host or on a device,
 without changing the MPI API or adding a separate device-buffer argument. UVA
 is an address-identification mechanism; it does not guarantee a particular
-transport or that a transfer will avoid host memory. The UVA-based pointer
-classification model is described in the :ref:`NVIDIA introduction
-<ref-nvidia-cuda-aware>`.
+transport or that a transfer will avoid host memory. 
 
-GPUDirect communication paths
------------------------------
 
-The MPI library selects a path based on GPU and network locality, message
-size, hardware, and configuration:
+.. note:: 
 
-* **GPUDirect P2P** can move data directly between GPUs on the same node.
-* **GPUDirect RDMA** can let a network adapter read or write GPU memory for an
-   inter-node transfer without a host-memory staging copy.
-* **GPUDirect accelerated communication** can remove an extra copy between a
-   CUDA driver buffer and a network-fabric buffer.
+   Staging is still useful: It is portable to non-CUDA-aware MPI builds, can be easier to debug, and may
+   beat direct paths for some small messages or poorly configured networks. Treat
+   CUDA awareness as a capability to verify, not a universal speed guarantee.
 
-When these paths are unavailable, CUDA-aware MPI can still accept the device
-pointer and perform internal staging through pinned host buffers. For larger
-messages, implementations may divide the transfer into chunks and pipeline
-PCIe transfers, host copies, and network operations. Therefore, passing a
-device pointer is not by itself proof that GPUDirect RDMA was used. See the
-:ref:`NVIDIA introduction <ref-nvidia-cuda-aware>` for diagrams of direct,
-accelerated, internally staged, and application-staged paths.
+
 
 Asynchronous fallback staging
 -----------------------------
@@ -84,13 +157,25 @@ Inspect the loaded implementation and its build-time CUDA support:
 
 .. code-block:: console
 
-   $ module list
+   $ module load openmpi/4.1.5
    $ ompi_info --parsable -l 9 | grep -i cuda
 
-The exact output is version-dependent. A crash such as ``invalid buffer
-pointer`` when the staged example works strongly suggests that the loaded MPI
-or selected transport cannot handle device memory. Confirm against the current
-NCI software page rather than forcing undocumented MCA parameters.
+
++--------------------------------------+--------------------------------------------------+
+| Output                               | Meaning                                          |
++======================================+==================================================+
+| ``--with-cuda=/apps/cuda/12.0.0``    | Open MPI was configured with CUDA 12.0.           |
++--------------------------------------+--------------------------------------------------+
+| ``options:mpi_ext:...cuda...``       | CUDA-related MPI extensions are enabled.         |
++--------------------------------------+--------------------------------------------------+
+| ``mca:btl:smcuda``                   | CUDA-aware shared-memory transport component.    |
++--------------------------------------+--------------------------------------------------+
+| ``mca:coll:cuda``                    | CUDA-related collective communication component. |
++--------------------------------------+--------------------------------------------------+
+| ``component:4.1.5``                  | Component version is Open MPI 4.1.5.              |
++--------------------------------------+--------------------------------------------------+
+
+The exact output is version-dependent. 
 
 A CUDA-aware MPI build is necessary but not sufficient: the hardware, PCIe or
 NVLink topology, network fabric, and runtime transport selection must also
@@ -100,11 +185,7 @@ support the direct path. Check each layer separately:
   and is the first check for **GPUDirect P2P**.
 * ``cudaDeviceCanAccessPeer`` can confirm at runtime that two GPUs can exchange
   data directly.
-* ``ibstat`` or ``ibv_devinfo`` confirms whether the node has an RDMA-capable
-  network interface, which is required for **GPUDirect RDMA**.
-* ``ucx_info -d`` or the Open MPI transport configuration shows whether the
-  active transport supports GPU buffers, such as ``cuda_copy`` or CUDA-aware
-  RDMA paths.
+
 
 These checks help distinguish the three common cases:
 

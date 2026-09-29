@@ -31,13 +31,14 @@ establishes the required ordering between the fill kernel and MPI.
 
    ``malloc`` and ``cudaMallocHost`` both return host pointers, but they allocate
    different kinds of host memory. ``malloc`` returns ordinary pageable memory.
-   CUDA can copy it, but the runtime may need to stage the data through a temporary
-   pinned buffer, and asynchronous copies cannot use it reliably without additional
-   care. ``cudaMallocHost`` returns page-locked (pinned) host memory, which the GPU
-   can access directly for more predictable and asynchronous transfers. Both kinds
-   of pointer are valid host buffers for ordinary MPI. Pinned memory is typically
-   faster for repeated transfers, but it is a limited system resource and should be
-   released with ``cudaFreeHost`` rather than ``free``.
+   Which means that the OS can generally page it out to swap when necessary.
+
+   ``cudaMallocHost`` returns page-locked (pinned) host memory, 
+   Here the OS is told that these pages must remain resident, so they cannot be 
+   paged out to swap while pinned. 
+    
+   Pinned memory is typically faster for repeated transfers, but it can limit the memory OS 
+   can work with.
 
 The printed time contains the network transfer *and both CUDA copies*. This is
 a pedagogical comparison, not a rigorous latency benchmark: add warm-ups,
@@ -51,11 +52,60 @@ before drawing performance conclusions.
    explain why fixed overhead dominates small messages while bandwidth matters
    for large messages. Replace pinned allocation with ``malloc`` and compare.
 
-Staging is still useful
------------------------
+Sample results
+--------------
 
-It is portable to non-CUDA-aware MPI builds, can be easier to debug, and may
-beat direct paths for some small messages or poorly configured networks. Treat
-CUDA awareness as a capability to verify, not a universal speed guarantee.
-Intel likewise describes a host-managed or "naïve" execution model as useful
-for some small messages.
+The following measurements correspond to the exercise's element counts in
+order. Each float occupies 4 bytes. The timer includes the device-to-host
+copy, MPI exchange, and host-to-device copy; initialization and the initial
+MPI barrier are outside the timed region.
+
+.. list-table:: Host-staged exchange measurements
+   :header-rows: 1
+
+   * - Float count
+     - Data per rank
+     - Printed MiB/rank
+     - Time (ms)
+     - Received sample
+   * - 1
+     - 4 bytes
+     - 0.0
+     - 0.047
+     - 1
+   * - 1 Ki (1,024)
+     - 4 KiB
+     - 0.0
+     - 0.112
+     - 1
+   * - 1 Mi (1,048,576)
+     - 4 MiB
+     - 4.0
+     - 6.276
+     - 1
+   * - 16 Mi (16,777,216)
+     - 64 MiB
+     - 64.0
+     - 100.367
+     - 1
+
+The two smallest buffers print as ``0.0 MiB/rank`` because the size is rounded
+to one decimal place. They still contain 4 bytes and 4 KiB respectively.
+
+For small messages, the fixed costs of initiating CUDA copies and MPI
+communication are significant compared with the cost of moving the data.
+Increasing the payload from 4 bytes to 4 KiB multiplies its size by 1,024,
+but the measured time increases by only about 2.4 times.
+
+For larger messages, data movement becomes more important. Increasing the
+payload from 4 MiB to 64 MiB multiplies its size by 16, and the measured time
+also increases by approximately 16 times (6.276 ms to 100.367 ms). This is
+consistent with bandwidth-dominated behaviour across the combined staging
+copies and MPI exchange; it does not measure network bandwidth alone.
+
+.. note::
+
+   These are individual measurements, not performance guarantees. 
+   Ideally you should have a warm-up run before any measurements.
+
+
