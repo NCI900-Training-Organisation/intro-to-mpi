@@ -65,7 +65,6 @@ Topics Covered
    04-jacobi
    05-overlap
    20-cuda-stream-aware-mpi
-   18-cuda-aware-mpi-diagnostics
    21-gpu-aware-mpi-best-practices
    07-reference
 
@@ -87,4 +86,6 @@ Topics Covered
       15-performance-methodology
       16-alternatives-and-future
       17-coverage-map
+      18-cuda-aware-mpi-diagnostics
       19-mpi-rma-gpu
+      
