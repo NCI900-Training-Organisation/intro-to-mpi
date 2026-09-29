@@ -38,13 +38,16 @@ int main(int argc, char **argv)
 
 
   fill<<<(n + 255) / 256, 256>>>(d, n, (float)rank);
-  CUDA_CHECK(cudaMemcpy(h, d, n * sizeof(float), cudaMemcpyDeviceToHost));
+  /* Finish initialization before timing the staged exchange. */
+  CUDA_CHECK(cudaDeviceSynchronize());
 
 
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_CHECK(MPI_Barrier(MPI_COMM_WORLD));
   double t = MPI_Wtime();
 
 
+  /* Time device-to-host copy, MPI exchange, and host-to-device copy. */
+  CUDA_CHECK(cudaMemcpy(h, d, n * sizeof(float), cudaMemcpyDeviceToHost));
   MPI_CHECK(MPI_Sendrecv_replace(
       h,                  /* pinned host buffer: send its contents, then replace with received data */
       (int)n,             /* number of elements to send and space for received elements */
