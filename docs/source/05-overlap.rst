@@ -12,7 +12,7 @@ rows. Submit it with:
 .. code-block:: text
 
    post Irecv/Isend -> interior CUDA kernel -> MPI_Waitall -> edge kernels
-          communication  <---- potential overlap ---->  computation
+      communication <------- potential overlap ---->  computation
 
 Nonblocking is necessary but not sufficient. Progress can depend on the MPI
 implementation, message size, and whether calls into MPI are needed while the
@@ -23,15 +23,20 @@ synchronisation protects the array swap.
 Avoid these common errors
 -------------------------
 
-Do not reuse send rows before ``MPI_Waitall``. Post receives before sends. Use
-unique, consistently matched tags. Do not run edge kernels until receives have
-completed. Keep messages contiguous unless the installed stack's datatype path
-has been validated. CUDA events time GPU work; ``MPI_Wtime`` plus rank barriers
-is appropriate for end-to-end distributed time.
+* Do not reuse send rows before ``MPI_Waitall``. 
+
+* Post receives before sends. 
+
+* Use unique, consistently matched tags. 
+
+* Do not run edge kernels until receives have completed. 
+
+
 
 .. admonition:: Exercise (25 minutes)
    :class: exercise
 
-   Predict when overlap helps by comparing halo bytes (``2*nx*sizeof(double)``)
-   with interior work. Run blocking and overlap versions for 2048 and 8192.
-   Explain a slowdown if the interior kernel is too short to hide communication.
+   Review the code ``05-jacobi-overlap.cu`` and test it with different combination 
+   of arguments. 
+
+   How is the performance compared to blocked Jacobi application?

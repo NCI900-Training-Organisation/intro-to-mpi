@@ -63,6 +63,6 @@ compare with a CPU reference on a small grid.
 .. admonition:: Exercise (20 minutes)
    :class: exercise
 
-   Draw rank 0 and rank 1's allocation and label the pointer used by every send
-   and receive. Change to ``2048 2048 100``. Use the output to calculate cell
-   updates per second: ``nx * ny * iterations / seconds``.
+   Review the code ``04-jacobi-blocking.cu`` and test it with different combination 
+   of arguments.
+   
