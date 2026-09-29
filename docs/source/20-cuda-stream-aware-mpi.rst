@@ -43,8 +43,14 @@ directly after the call:
    increment<<<grid, block, 0, consumer_stream>>>(receive_buffer, count);
    cudaStreamSynchronize(consumer_stream);
 
-No additional CUDA event is needed between MPI completion and the kernel
-launch. Recording an event after MPI returns does not track MPI's internal
+ 
+.. note::
+
+   No additional CUDA event is needed before launching the consumer kernel
+   because the blocking MPI call completes the receive before returning.
+
+
+Recording an event after MPI returns does not track MPI's internal
 work; the MPI call itself establishes receive completion. The final
 ``cudaStreamSynchronize`` waits for the consumer kernel before the host reads
 its result.
@@ -85,11 +91,4 @@ application timeline. A kernel running concurrently with an MPI call does not
 prove useful overlap if the MPI library requires CPU progress or internally
 serializes access to the device.
 
-Portability checklist
----------------------
 
-Before relying on stream-aware behavior, check the MPI implementation's CUDA
-documentation and test the exact operation, buffer type, stream pattern, and
-transport. The explicit producer event and blocking MPI completion in the companion
-source is the baseline to compare against any implementation-specific
-extension.
