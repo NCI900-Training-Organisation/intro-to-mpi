@@ -29,7 +29,7 @@ By the end you can
 
  #. Overlap GPU computation with communication
 
-Core hands-on route
+Topics Covered
 -------------------
 
 .. list-table::
@@ -67,22 +67,24 @@ Core hands-on route
    20-cuda-stream-aware-mpi
    18-cuda-aware-mpi-diagnostics
    21-gpu-aware-mpi-best-practices
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Extended topics and reference
-   :numbered:
-
-   06-performance
    07-reference
-   08-mpi-fundamentals
-   09-cuda-memory
-   10-synchronization
-   11-gpudirect-topology
-   12-communication-patterns
-   13-collectives
-   14-debugging-portability
-   15-performance-methodology
-   16-alternatives-and-future
-   17-coverage-map
-   19-mpi-rma-gpu
+
+..
+   .. toctree::
+      :maxdepth: 2
+      :caption: Extended topics and reference
+      :numbered:
+
+      06-performance
+      07-reference
+      08-mpi-fundamentals
+      09-cuda-memory
+      10-synchronization
+      11-gpudirect-topology
+      12-communication-patterns
+      13-collectives
+      14-debugging-portability
+      15-performance-methodology
+      16-alternatives-and-future
+      17-coverage-map
+      19-mpi-rma-gpu
