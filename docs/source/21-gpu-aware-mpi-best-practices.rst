@@ -23,8 +23,16 @@ Support and transport
   separately; support is not necessarily uniform across operations.
 * Treat a successful device-pointer call as API support, not proof of GPUDirect
   RDMA or zero-copy transport.
-* Record the CUDA, MPI, UCX or OFI, driver, GPU, NIC, and topology versions for
-  reproducible measurements.
+
+
+Shared CUDA runtime linking
+---------------------------
+
+When the CUDA runtime is statically linked, communication libraries may not be
+able to intercept CUDA runtime calls through the normal dynamic-linking
+mechanism. They may therefore need to determine the memory type of communication
+buffers through other mechanisms, which can introduce additional overhead and
+potentially increase communication latency.
 
 Rank, GPU, and NIC placement
 ----------------------------
@@ -69,18 +77,3 @@ Memory choices
   overhead.
 * Keep host staging buffers pinned when explicit staging is required.
 
-Correctness experiments
------------------------
-
-For every new GPU-aware MPI pattern, test at least:
-
-* one rank and multiple ranks;
-* one node and multiple nodes;
-* small and large messages;
-* default and non-default CUDA streams;
-* first-use and warmed-up iterations; and
-* a result compared with a CPU or host-staged reference.
-
-Report the MPI implementation and transport configuration with performance
-results. A result that is correct on one cluster does not establish portability
-to another CUDA-aware MPI stack.
