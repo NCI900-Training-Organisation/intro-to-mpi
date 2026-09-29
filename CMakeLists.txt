@@ -7,6 +7,10 @@ set(CMAKE_CUDA_RUNTIME_LIBRARY Shared)
 
 project(cuda_aware_mpi_workshop LANGUAGES CXX CUDA)
 
+# CUDA compilation uses nvcc, so obtain MPI settings explicitly even though
+# the C++ compiler wrapper already provides them implicitly.
+set(MPI_ASSUME_NO_BUILTIN_MPI TRUE)
+set(MPI_CXX_COMPILER "${MPI_CXX_WRAPPER}")
 find_package(MPI REQUIRED COMPONENTS CXX)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -38,5 +42,6 @@ foreach(target IN LISTS WORKSHOP_TARGETS)
   target_compile_options(${target} PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:-lineinfo>)
   set_target_properties(${target} PROPERTIES
+    LINKER_LANGUAGE CXX
     CUDA_SEPARABLE_COMPILATION ON)
 endforeach()
