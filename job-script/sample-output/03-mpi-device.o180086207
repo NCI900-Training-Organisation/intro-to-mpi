@@ -1,0 +1,15 @@
+device-direct: 0.0 MiB/rank, 1.058 ms, received 1
+
+======================================================================================
+                  Resource Usage on 2026-09-29 10:52:07:
+   Job Id:             180086207.gadi-pbs
+   Project:            vp91
+   Exit Status:        0
+   Service Units:      0.06
+   NCPUs Requested:    24                  CPU Time Used: 00:00:02        
+   Memory Requested:   8.0GB                 Memory Used: 1.26GB          
+   NGPUs Requested:    2                 GPU Utilisation: 0%              
+                                         GPU Memory Used: 0B              
+   Walltime Requested: 00:10:00            Walltime Used: 00:00:03        
+   JobFS Requested:    1.0GB                  JobFS Used: 0B              
+======================================================================================
