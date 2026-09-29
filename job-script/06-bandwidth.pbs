@@ -6,7 +6,7 @@
 #PBS -l mem=8gb
 #PBS -l jobfs=1GB
 #PBS -l walltime=00:20:00
-#PBS -l storage=scratch/jxj900+gdata/vp91
+#PBS -l storage=scratch/vp91+gdata/vp91
 #PBS -l wd
 #PBS -N 06-cuda-mpi-bw
 #PBS -j oe
