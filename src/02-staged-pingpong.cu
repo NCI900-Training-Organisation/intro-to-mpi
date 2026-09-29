@@ -45,8 +45,17 @@ int main(int argc, char **argv)
   double t = MPI_Wtime();
 
 
-  MPI_CHECK(MPI_Sendrecv_replace(h, (int)n, MPI_FLOAT, 1 - rank, 0, 1 - rank, 0,
-                                 MPI_COMM_WORLD, MPI_STATUS_IGNORE));
+  MPI_CHECK(MPI_Sendrecv_replace(
+      h,                  /* pinned host buffer: send its contents, then replace with received data */
+      (int)n,             /* number of elements to send and space for received elements */
+      MPI_FLOAT,          /* datatype of each buffer element */
+      1 - rank,           /* destination: the other rank (0 sends to 1, 1 sends to 0) */
+      0,                  /* send tag identifying the outgoing message */
+      1 - rank,           /* source: receive from the other rank */
+      0,                  /* receive tag matching the incoming message */
+      MPI_COMM_WORLD,     /* communicator containing both ranks */
+      MPI_STATUS_IGNORE   /* discard receive status, such as sender and message tag */
+  ));
   CUDA_CHECK(cudaMemcpy(d, h, n * sizeof(float), cudaMemcpyHostToDevice));
   t = MPI_Wtime() - t;
 
