@@ -12,6 +12,13 @@ before MPI accesses the device buffer, launch the consumer kernel after
 blocking MPI completes, and synchronize the consumer stream before reading
 the result on the host.
 
+After building the example on an allocated compute node, submit its runtime
+job from the repository root:
+
+.. code-block:: console
+
+   $ qsub job-script/12-stream-aware-mpi.pbs
+
 Producer ordering
 -----------------
 
@@ -90,5 +97,4 @@ Measure overlap with CUDA events for device work and ``MPI_Wtime`` for the
 application timeline. A kernel running concurrently with an MPI call does not
 prove useful overlap if the MPI library requires CPU progress or internally
 serializes access to the device.
-
 
