@@ -1,4 +1,4 @@
-CUDA-aware MPI
+GPU-aware MPI
 ==============
 
 This documentation is an introductory guide to using MPI with CUDA GPUs.
