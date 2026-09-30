@@ -20,7 +20,7 @@ debugging, portability, and performance.
 | Packed and datatype strided halos | `08-strided-halo.cu` |
 | Managed-memory communication | `09-managed-memory.cu` |
 | Device selection before `MPI_Init` | `10-preinit-device.cu` |
-| CUDA stream ordering around MPI | `12-stream-aware-mpi.cu` |
+| CUDA stream ordering around MPI | `06-stream-aware-mpi.cu` |
 
 
 ## Quick start on Gadi
@@ -121,12 +121,12 @@ Run `qsub` once to submit. Rerun `qstat` to check the queue without resubmitting
 On an allocated compute node, build the comparison, then submit its runtime job:
 
 ```bash
-bash build-script/build-src.sh 13-warmup-run.cu
-qsub job-script/13-warmup-run.pbs
+bash build-script/build-src.sh 07-warmup-run.cu
+qsub job-script/07-warmup-run.pbs
 qstat
 ```
 
-`13-warmup-run` requires two ranks and accepts a positive float count (default
+`07-warmup-run` requires two ranks and accepts a positive float count (default
 1,048,576). Edit the PBS argument to test 1, 1024, 1048576, or 16777216 floats.
 It performs exactly two untimed warm-up exchanges for each method, followed by
 100 timed exchanges. Staged time includes device-to-host copying, MPI, and

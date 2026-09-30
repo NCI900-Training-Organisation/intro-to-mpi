@@ -5,7 +5,7 @@ CUDA-aware MPI accepts device pointers, but MPI does not automatically know
 that a CUDA kernel running in a non-default stream must finish before MPI reads
 the buffer. The application must make the producer-to-MPI dependency explicit.
 
-The companion example ``src/12-stream-aware-mpi.cu`` uses a CUDA event and
+The companion example ``src/06-stream-aware-mpi.cu`` uses a CUDA event and
 streams around a simple ``MPI_Sendrecv``. It demonstrates the conservative
 portable rule: record an event after the producer kernel, wait for that event
 before MPI accesses the device buffer, launch the consumer kernel after
@@ -17,7 +17,7 @@ job from the repository root:
 
 .. code-block:: console
 
-   $ qsub job-script/12-stream-aware-mpi.pbs
+   $ qsub job-script/06-stream-aware-mpi.pbs
 
 Producer ordering
 -----------------

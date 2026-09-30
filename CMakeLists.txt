@@ -53,11 +53,11 @@ set(WORKSHOP_TARGETS
     03-device-pingpong
     04-jacobi-blocking
     05-jacobi-overlap
-    12-stream-aware-mpi
-    13-warmup-run)
+    06-stream-aware-mpi
+    07-warmup-run)
 
 # Apply the same build settings to every example. A single target can be built
-# with: cmake --build build --target 13-warmup-run
+# with: cmake --build build --target 07-warmup-run
 foreach(target IN LISTS WORKSHOP_TARGETS)
 
   # Create an executable from this example's CUDA source file.

@@ -8,11 +8,13 @@
 #PBS -l walltime=00:10:00
 #PBS -l storage=scratch/vp91+gdata/vp91
 #PBS -l wd
-#PBS -N 13-warmup-run
+#PBS -N 06-stream-aware
 #PBS -j oe
 
-set -euo pipefail
+
+set -eu
 module purge
 module load cuda/12.9.0 openmpi/4.1.5
 
-mpirun -np 2 --map-by ppr:2:node /scratch/vp91/$USER/intro-to-mpi/build/bin/13-warmup-run 1048576
+
+mpirun -np 2 --map-by ppr:2:node /scratch/vp91/$USER/intro-to-mpi/build/bin/06-stream-aware-mpi

@@ -105,7 +105,7 @@ transfer.
 Results after two warm-up exchanges
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The measurements below were collected with the earlier ``13-warmup-run``
+The measurements below were collected with the earlier ``07-warmup-run``
 version, using two untimed warm-up exchanges followed by one timed exchange
 per method. The current program instead averages 100 timed exchanges after
 two warm-ups; these historical measurements are not 100-exchange averages.

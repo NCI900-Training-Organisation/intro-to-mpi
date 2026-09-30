@@ -56,7 +56,7 @@ int main(int argc, char **argv)
   if (size != 2 || argc > 2 || errno == ERANGE || parsed < 1 ||
       parsed > INT_MAX || (argc == 2 && (end == argv[1] || *end != '\0'))) {
     if (!rank) {
-      std::fprintf(stderr, "Usage: mpirun -np 2 13-warmup-run [float-count: 1..INT_MAX]\n");
+      std::fprintf(stderr, "Usage: mpirun -np 2 07-warmup-run [float-count: 1..INT_MAX]\n");
     }
     MPI_Abort(MPI_COMM_WORLD, 1);
     return 1;
