@@ -5,11 +5,8 @@ This documentation is an introductory guide to using MPI with CUDA GPUs.
 
 .. note::
 
-   The examples target NCI Gadi, project ``vp91``, queue ``gpuvolta``, and
-   NVIDIA Volta GPUs.
-
-Participants should know basic C/C++, CUDA kernels, and MPI point-to-point
-calls.
+   
+  Participants should know basic C or C++, CUDA APIs, and MPI APIs.
 
 Learning outcomes
 -----------------
