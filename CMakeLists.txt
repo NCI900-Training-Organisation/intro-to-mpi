@@ -53,11 +53,6 @@ set(WORKSHOP_TARGETS
     03-device-pingpong
     04-jacobi-blocking
     05-jacobi-overlap
-    06-bandwidth
-    07-device-collectives
-    08-strided-halo
-    09-managed-memory
-    10-preinit-device
     12-stream-aware-mpi
     13-warmup-run)
 
